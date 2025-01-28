@@ -14,9 +14,11 @@ import com.carlos.grabredenvelope.activity.MainActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
 import kotlinx.android.synthetic.main.fragment_control.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  *                             _ooOoo_
@@ -132,7 +134,11 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
                     500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
                 LogUtils.d("start show delay open time:$delayTime")
                 delay(delayTime)
-                LogUtils.d("end show delay open time:$delayTime")
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireActivity(), "延时打开 $delayTime ms", Toast.LENGTH_SHORT)
+                        .show()
+                    LogUtils.d("end show delay open time:$delayTime")
+                }
             }
         }
     }
