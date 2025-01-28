@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">微信抢红包</string>
-    <string name="app_name_dev">抢红包DEV</string>
     <string name="app_content">小不点</string>
 
     <string name="grab_wechat_envelope">抢微信红包</string>
-    <string name="grab_dingding_envelope">抢钉钉红包</string>
     <string name="auto_send_emoji">自动发送表情</string>
 
     <string name="how_to_use">
@@ -39,12 +37,5 @@
         \n\n有问题也可联系偶尔会使用的微信：xbdcc1。
         \n\n ——made by 小不点</string>
 
-    <string name="dingding_description">基于钉钉5.0.5版本开发，不做版本适配，只监听当前对话页面红包</string>
-
-
-    <string name="sure">确定</string>
-    <string name="cancel">取消</string>
-    <string name="unkonown_error">服务端异常或网络超时，请稍后再试！</string>
-    <string name="no_net">网络异常，请检查网络连接</string>
 
 </resources>

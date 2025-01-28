@@ -10,7 +10,6 @@ import com.carlos.grabredenvelope.databinding.ActivityMainBinding
 import com.carlos.grabredenvelope.fragment.AboutFragment
 import com.carlos.grabredenvelope.fragment.ControlFragment
 import com.carlos.grabredenvelope.fragment.EmojiFragment
-import com.carlos.grabredenvelope.fragment.GuideFragment
 import com.carlos.grabredenvelope.fragment.RecordFragment
 import kotlinx.android.synthetic.main.activity_main.viewPager
 
@@ -58,12 +57,11 @@ open class MainActivity : BaseActivity() {
 
     var fragments = mutableListOf<Fragment>(
         ControlFragment(),
-        GuideFragment(),
         AboutFragment(),
         RecordFragment(),
         EmojiFragment()
     )
-    var titles = mutableListOf("控制", "教程", "说明", "微信", "表情")
+    var titles = mutableListOf("控制", "教程", "微信", "表情")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
