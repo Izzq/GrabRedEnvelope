@@ -14,6 +14,9 @@ import com.carlos.grabredenvelope.activity.MainActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
 import kotlinx.android.synthetic.main.fragment_control.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  *                             _ooOoo_
@@ -97,7 +100,7 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
         et_pointX.addTextChangedListener {
             if (et_pointX.text.isNullOrEmpty()) {
                 wechatControlVO.pointX = 0
-            }else {
+            } else {
                 wechatControlVO.pointX = et_pointX.text.toString().toLong()
             }
             RedEnvelopePreferences.wechatControl = wechatControlVO
@@ -106,7 +109,7 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
         et_pointY.addTextChangedListener {
             if (et_pointY.text.isNullOrEmpty()) {
                 wechatControlVO.pointY = 0
-            }else {
+            } else {
                 wechatControlVO.pointY = et_pointY.text.toString().toLong()
             }
             RedEnvelopePreferences.wechatControl = wechatControlVO
@@ -114,13 +117,23 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ll_custom_click.visibility = View.VISIBLE
-        }else {
+        } else {
             ll_custom_click.visibility = View.GONE
         }
 
         et_text_filters.setText(RedEnvelopePreferences.grabFilter)
         et_text_filters.addTextChangedListener {
             RedEnvelopePreferences.grabFilter = et_text_filters.text.toString()
+        }
+
+        btnTest.setOnClickListener {
+            GlobalScope.launch {
+                val delayTime =
+                    500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
+                LogUtils.d("start show delay open time:$delayTime")
+                delay(delayTime)
+                LogUtils.d("end show delay open time:$delayTime")
+            }
         }
     }
 
@@ -134,15 +147,15 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
 
         wechatControlVO = RedEnvelopePreferences.wechatControl
         t_putong = wechatControlVO.delayOpenTime
-        tv_qq_putong.text = "领取红包延迟时间：" + t_putong + "s"
+        tv_qq_putong.text = "领取红包延迟时间：" + t_putong / 10.0 + "s"
         sb_qq_putong.progress = t_putong
 
         t_lingqu = wechatControlVO.delayCloseTime
         sb_qq_lingqu.progress = t_lingqu - 1
-        if (t_lingqu == 11) {
+        if (t_lingqu == 101) {
             tv_qq_lingqu.text = "红包领取页关闭时间：" + "不关闭"
         } else {
-            tv_qq_lingqu.text = "红包领取页关闭时间：" + t_lingqu + "s"
+            tv_qq_lingqu.text = "红包领取页关闭时间：" + t_lingqu / 10.0 + "s"
         }
         cb_custom_click.isChecked = RedEnvelopePreferences.wechatControl.isCustomClick
         et_pointX.setText(RedEnvelopePreferences.wechatControl.pointX.toString())
@@ -162,7 +175,7 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
             R.id.sb_qq_putong -> {
                 LogUtils.d("sb_qq_putong:$progress")
                 t_putong = progress
-                tv_qq_putong.text = "领取红包延迟时间：" + t_putong + "s"
+                tv_qq_putong.text = "领取红包延迟时间：" + t_putong / 10.0 + "s"
                 wechatControlVO.delayOpenTime = t_putong
                 RedEnvelopePreferences.wechatControl = wechatControlVO
             }
@@ -170,8 +183,8 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
             R.id.sb_qq_lingqu -> {
                 LogUtils.d("sb_qq_lingqu:$progress")
                 t_lingqu = progress + 1
-                tv_qq_lingqu.text = "红包领取页关闭延迟时间：" + t_lingqu + "s"
-                if (t_lingqu == 11) {
+                tv_qq_lingqu.text = "红包领取页关闭延迟时间：" + t_lingqu / 10.0 + "s"
+                if (t_lingqu == 101) {
                     tv_qq_lingqu.text = "红包领取页关闭时间：" + "不关闭"
                 }
                 wechatControlVO.delayCloseTime = t_lingqu

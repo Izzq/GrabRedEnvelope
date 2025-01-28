@@ -98,7 +98,7 @@ class WechatService : BaseAccessibilityService() {
     override fun monitorWindowChanged(event: AccessibilityEvent) {
         LogUtils.d("monitorWindowChanged:$event")
 
-        if(WechatFilter.isRemarkFilter(rootInActiveWindow)) return
+        if (WechatFilter.isRemarkFilter(rootInActiveWindow)) return
 
         openRedEnvelope(event)
         quitEnvelope(event)
@@ -107,7 +107,7 @@ class WechatService : BaseAccessibilityService() {
     override fun monitorContentChanged(event: AccessibilityEvent) {
         LogUtils.d("monitorContentChanged:$event")
 
-        if(WechatFilter.isRemarkFilter(rootInActiveWindow)) return
+        if (WechatFilter.isRemarkFilter(rootInActiveWindow)) return
 
         GlobalScope.launch {
             delay(300L)
@@ -174,7 +174,7 @@ class WechatService : BaseAccessibilityService() {
 
         GlobalScope.launch {
             LogUtils.d("start find open id")
-            val envelopes = getNodeInfosByViewId(RED_ENVELOPE_OPEN_ID,300, 5)
+            val envelopes = getNodeInfosByViewId(RED_ENVELOPE_OPEN_ID, 300, 5)
             LogUtils.d("end find open id")
             if (envelopes.isNullOrEmpty()) {
                 // 没有开按钮，则点击退出按钮
@@ -183,7 +183,8 @@ class WechatService : BaseAccessibilityService() {
                 return@launch
             }
 
-            val delayTime = 500L + 1000L * RedEnvelopePreferences.wechatControl.delayOpenTime
+            val delayTime =
+                500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
             LogUtils.d("delay open time:$delayTime")
             delay(delayTime)
             clickFirstNodeInfo(envelopes, true)
@@ -207,9 +208,9 @@ class WechatService : BaseAccessibilityService() {
                 RedEnvelopePreferences.wechatControl.pointY.toFloat()
             )
         }
-        val delayTime = 500L + 1000L * RedEnvelopePreferences.wechatControl.delayOpenTime
+        val delayTime = 500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
         LogUtils.d("delay custom open time:$delayTime")
-        gesturePath(path,  delayTime, interval = 500, times = 3)
+        gesturePath(path, delayTime, interval = 500, times = 3)
         status = HAS_OPENED
         LogUtils.d("opened a redenvelope")
     }
@@ -225,9 +226,9 @@ class WechatService : BaseAccessibilityService() {
 
         GlobalScope.launch {
             saveData()
-            val delayTime = 1000L * RedEnvelopePreferences.wechatControl.delayCloseTime
+            val delayTime = (1000L * RedEnvelopePreferences.wechatControl.delayCloseTime / 10)
             LogUtils.d("delay close time:$delayTime")
-            if (delayTime != 11000L) {
+            if (delayTime != 101000L) {
                 delay(delayTime)
                 back()
             }
@@ -241,7 +242,7 @@ class WechatService : BaseAccessibilityService() {
      */
     private fun saveData() {
         getNodeInfosByViewId(RED_ENVELOPE_COUNT_ID)?.let {
-            if (it.isNullOrEmpty())return
+            if (it.isNullOrEmpty()) return
             val wechatRedEnvelope = WechatRedEnvelope()
             wechatRedEnvelope.count = it[0].text.toString()
             WechatRedEnvelopeDb.insertData(wechatRedEnvelope)

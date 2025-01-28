@@ -45,9 +45,9 @@ data class WechatControlVO(
     var isMonitorChat: Boolean = true, //是否监控聊天列表页面
     var ifGrabSelf: Boolean = true, //是否抢自己发的红包
     @Transient
-    var delayOpenTime: Int = 0,
+    var delayOpenTime: Int = 5,
     @Transient
-    var delayCloseTime: Int = 1,
+    var delayCloseTime: Int = 10,
     @Transient
     var isCustomClick: Boolean = false,
     var pointX: Long = 0,
