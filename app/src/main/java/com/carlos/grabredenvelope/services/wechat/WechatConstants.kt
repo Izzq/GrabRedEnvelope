@@ -1,4 +1,4 @@
-package com.carlos.grabredenvelope.util
+package com.carlos.grabredenvelope.services.wechat
 
 import com.carlos.cutils.util.LogUtils
 

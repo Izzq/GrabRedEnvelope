@@ -7,9 +7,12 @@ import com.carlos.cutils.base.adapter.CBaseMyPagerAdapter
 import com.carlos.cutils.listener.PermissionListener
 import com.carlos.cutils.util.LogUtils
 import com.carlos.grabredenvelope.databinding.ActivityMainBinding
-import com.carlos.grabredenvelope.fragment.*
-import com.carlos.grabredenvelope.util.Update
-import kotlinx.android.synthetic.main.activity_main.*
+import com.carlos.grabredenvelope.fragment.AboutFragment
+import com.carlos.grabredenvelope.fragment.ControlFragment
+import com.carlos.grabredenvelope.fragment.EmojiFragment
+import com.carlos.grabredenvelope.fragment.GuideFragment
+import com.carlos.grabredenvelope.fragment.RecordFragment
+import kotlinx.android.synthetic.main.activity_main.viewPager
 
 /**
  *                             _ooOoo_
@@ -53,10 +56,14 @@ open class MainActivity : BaseActivity() {
 
     private val WECHAT_SERVICE_NAME = "com.carlos.grabredenvelope/.services.WechatService"
 
-    var fragments = mutableListOf<Fragment>(ControlFragment(), GuideFragment(), AboutFragment(),
-        CodeFragment(), RewardFragment(), RecordFragment(), EmojiFragment()
+    var fragments = mutableListOf<Fragment>(
+        ControlFragment(),
+        GuideFragment(),
+        AboutFragment(),
+        RecordFragment(),
+        EmojiFragment()
     )
-    var titles = mutableListOf("控制", "教程", "说明", "源码", "打赏", "微信", "表情")
+    var titles = mutableListOf("控制", "教程", "说明", "微信", "表情")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,14 +74,9 @@ open class MainActivity : BaseActivity() {
         initView()
 
         getPermissions()
-        checkVersion()
         addListener()
     }
 
-    private fun checkVersion() {
-        val update = Update(this, 1)
-        update.update()
-    }
 
     private fun initView() {
         val adapter = CBaseMyPagerAdapter(supportFragmentManager, fragments, titles)
@@ -95,14 +97,15 @@ open class MainActivity : BaseActivity() {
     }
 
     private fun getPermissions() {
-        requestPermission(100, object : PermissionListener {
-            override fun permissionSuccess() {}
-            override fun permissionFail() {}
-        }, Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        requestPermission(
+            100,
+            object : PermissionListener {
+                override fun permissionSuccess() {}
+                override fun permissionFail() {}
+            },
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
     }
-
-    fun checkItem(item: Int) {
-        viewPager.currentItem = item
-    }
-
 }

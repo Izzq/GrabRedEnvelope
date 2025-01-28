@@ -137,33 +137,4 @@ class DingdingService : BaseAccessibilityService() {
         }
     }
 
-//    /**
-//     * 递归遍历出WebView节点
-//     */
-//    private var accessibilityNodeInfoWebView: AccessibilityNodeInfo? = null
-//
-//    private fun findWebViewNode(rootNode: AccessibilityNodeInfo) {
-//        for (i in 0 until rootNode.childCount) {
-//            val child = rootNode.getChild(i)
-//            if (child == null) continue
-//            if ("android.webkit.WebView" == child.className) {
-//                accessibilityNodeInfoWebView = child
-//                LogUtils.d("findWebViewNode--找到webView" + accessibilityNodeInfoWebView)
-//                return
-//            }
-//            if (child.childCount > 0) {
-//                findWebViewNode(child)
-//            }
-//        }
-//    }
-//
-//    fun getNodes(accessibilityNodeInfo: AccessibilityNodeInfo) {
-//        for (index in 0 until accessibilityNodeInfo.childCount) {
-//            val nodeInfo = accessibilityNodeInfo.getChild(index)
-//            LogUtils.d("nodeinfo:$nodeInfo")
-//            if (nodeInfo != null)
-//                getNodes(nodeInfo)
-//        }
-//    }
-
 }

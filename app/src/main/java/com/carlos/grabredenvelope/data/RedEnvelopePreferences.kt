@@ -1,5 +1,6 @@
 package com.carlos.grabredenvelope.data
 
+import android.annotation.SuppressLint
 import com.carlos.cutils.base.CBasePreferences
 import com.carlos.cutils.util.LogUtils
 import com.carlos.grabredenvelope.MyApplication
@@ -44,6 +45,7 @@ import kotlinx.serialization.json.Json
  * Github: https://github.com/xbdcc/.
  * Created by Carlos on 2019/2/21.
  */
+@SuppressLint("StaticFieldLeak")
 object RedEnvelopePreferences :
     CBasePreferences("redenvelope_preferences", MyApplication.instance.applicationContext) {
 
@@ -52,7 +54,6 @@ object RedEnvelopePreferences :
     private const val EMOJI_TEXT = "emoji_text"
     private const val EMOJI_TIMES = "emoji_times"
     private const val EMOJI_INTERVAL = "emoji_interval"
-    private const val STOP_TIME = "stop_time"
     private const val GRAB_FILTER = "grab_filter"
 
     var wechatControl: WechatControlVO
@@ -96,12 +97,6 @@ object RedEnvelopePreferences :
         get() = getInt(EMOJI_INTERVAL, 1)
         set(value) {
             setInt(EMOJI_INTERVAL, value)
-        }
-
-    var stopTime: String
-        get() = getString(STOP_TIME, "")
-        set(value) {
-            setString(STOP_TIME, value)
         }
 
     var grabFilter: String

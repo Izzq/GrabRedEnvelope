@@ -5,13 +5,11 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.EditText
 import com.carlos.cutils.extend.findAndClickFirstNodeInfoByViewId
-import com.carlos.cutils.extend.getNodeInfosByText
 import com.carlos.cutils.extend.getNodeInfosByViewId
-import com.carlos.cutils.extend.isExistNodeInfosByViewId
 import com.carlos.cutils.util.AppUtils
 import com.carlos.cutils.util.LogUtils
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
-import com.carlos.grabredenvelope.util.WechatConstants
+import com.carlos.grabredenvelope.services.wechat.WechatConstants
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name=".services.WechatService"
+            android:name=".services.wechat.WechatService"
             android:label="@string/grab_wechat_envelope"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">

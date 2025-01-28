@@ -29,7 +29,7 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        applicationId "com.carlos.grabredenvelope"
+        applicationId "com.carlos.gbd"
         minSdkVersion 18
         targetSdkVersion 33
         versionCode 360

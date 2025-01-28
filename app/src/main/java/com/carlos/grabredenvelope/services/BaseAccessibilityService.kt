@@ -11,7 +11,6 @@ import com.carlos.cutils.util.LogUtils
 import com.carlos.grabredenvelope.MyApplication
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.activity.MainActivity
-import com.carlos.grabredenvelope.util.ControlUse
 import io.sentry.Sentry
 
 /**
@@ -51,11 +50,11 @@ import io.sentry.Sentry
  */
 abstract class BaseAccessibilityService : CBaseAccessibilityService() {
 
-    private lateinit var controlUse: ControlUse
     open var notificationTitle: String = ""
 
     /* 状态切换，流程更直观，避免人为点击的误操作，等待红包——点击红包关键字——点击红包——拆红包——等待红包循环 */
     var status: Int = WAIT_NEW
+
     companion object {
         const val WAIT_NEW = 0 //等待新的红包
         const val HAS_RECEIVED = 1 //通知或聊天列表页面收到红包
@@ -66,8 +65,6 @@ abstract class BaseAccessibilityService : CBaseAccessibilityService() {
     override fun onCreate() {
         super.onCreate()
         LogUtils.d("Service onCreate.")
-        controlUse = ControlUse(applicationContext)
-        if (controlUse.stopUse()) isMonitor = false
     }
 
     override fun onDestroy() {
@@ -109,7 +106,7 @@ abstract class BaseAccessibilityService : CBaseAccessibilityService() {
 
     override fun monitorNotificationChanged(event: AccessibilityEvent) {
         val text = event.text.toString()
-        if (status!= WAIT_NEW) return
+        if (status != WAIT_NEW) return
         if (text.isEmpty() or notificationTitle.isNullOrEmpty()) {
             return
         }
