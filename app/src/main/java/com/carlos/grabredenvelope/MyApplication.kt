@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.multidex.MultiDexApplication
 import com.carlos.cutils.CUtils
 import com.carlos.cutils.util.LogUtils
+import com.tencent.bugly.crashreport.CrashReport
 
 
 /**
@@ -51,6 +52,12 @@ class MyApplication : MultiDexApplication() {
         instance = this
 
         CUtils.init(this)
+
+        CrashReport.initCrashReport(
+            this,
+            "4f2daf6e38",
+            false
+        )
 
     }
 
