@@ -52,8 +52,6 @@ class MyApplication : MultiDexApplication() {
 
         CUtils.init(this)
 
-        AppInit()
-
     }
 
     companion object {
