@@ -36,12 +36,6 @@
 -dontwarn cn.jiguang.**
 -keep class cn.jiguang.** { *; }
 
-# sentry
--keepattributes LineNumberTable,SourceFile
--dontwarn org.slf4j.**
--dontwarn javax.**
--keep class io.sentry.event.Event { *; }
-
 
 # greendao
 -keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {

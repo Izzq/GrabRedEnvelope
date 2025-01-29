@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.greenrobot.greendao' // apply plugin
 apply plugin: 'kotlinx-serialization'
 
-apply plugin: 'io.sentry.android.gradle'
+
 apply plugin: 'org.greenrobot.greendao'
 
 def defaultPropertiesFile = rootProject.file("buildsystem/default.properties")
@@ -68,12 +68,9 @@ android {
     productFlavors {
         dev {          //开发测试版本
             buildConfigField("String", "UMENG_APPKEY_DEV", "\"${defaultProperties['UMENG_APPKEY_DEV']}\"")
-            buildConfigField("String", "SENTRY_DSN", "\"${defaultProperties['SENTRY_DSN_DEV']}\"")
-
         }
         production {   //正式发布版本
             buildConfigField("String", "UMENG_APPKEY", "\"${defaultProperties['UMENG_APPKEY']}\"")
-            buildConfigField("String", "SENTRY_DSN", "\"${defaultProperties['SENTRY_DSN']}\"")
         }
     }
 
@@ -110,12 +107,6 @@ android.applicationVariants.all { variant ->
     }
 }
 
-sentry {
-    tracingInstrumentation {
-        enabled = true
-    }
-}
-
 greendao {
     schemaVersion 2//数据库版本号
     daoPackage 'com.carlos.grabredenvelope.db'//设置DaoMaster、DaoSession、Dao包名
@@ -139,7 +130,7 @@ dependencies {
     implementation 'com.umeng.umsdk:asms:1.4.1'// 必选
     implementation 'com.umeng.umsdk:apm:1.7.0' // 错误分析模块改为独立库，看crash和性能数据请一定集成
 
-    implementation 'io.sentry:sentry-android:6.10.0'
+
     implementation 'com.google.android.material:material:1.5.0'
 
     implementation 'org.greenrobot:greendao:3.2.2' // add library

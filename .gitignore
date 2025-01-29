@@ -14,7 +14,6 @@
 app/src/main/java/com/carlos/grabredenvelope/local
 /apk
 
-sentry.properties
 
 *.iml
 .gradle
