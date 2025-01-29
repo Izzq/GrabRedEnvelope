@@ -1,6 +1,5 @@
 package com.carlos.grabredenvelope.activity
 
-import cn.jpush.android.api.JPushInterface
 import com.carlos.cutils.base.activity.CBaseAccessibilityActivity
 
 
@@ -44,12 +43,12 @@ open class BaseActivity : CBaseAccessibilityActivity() {
 
     override fun onResume() {
         super.onResume()
-        JPushInterface.onResume(this)
+
     }
 
     override fun onPause() {
         super.onPause()
-        JPushInterface.onPause(this)
+
     }
 
 }
