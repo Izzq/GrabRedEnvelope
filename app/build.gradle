@@ -46,7 +46,6 @@ android {
                 JPUSH_APPKEY : defaultProperties.getProperty('JPUSH_APPKEY'), //JPush 上注册的包名对应的 Appkey.
                 JPUSH_CHANNEL: "developer-default", //暂时填写默认值即可.
         ]
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs 'zh'
         multiDexEnabled true
     }
@@ -66,12 +65,7 @@ android {
 
     //多渠道打包
     productFlavors {
-        dev {          //开发测试版本
-            buildConfigField("String", "UMENG_APPKEY_DEV", "\"${defaultProperties['UMENG_APPKEY_DEV']}\"")
-        }
-        production {   //正式发布版本
-            buildConfigField("String", "UMENG_APPKEY", "\"${defaultProperties['UMENG_APPKEY']}\"")
-        }
+
     }
 
     buildFeatures {
@@ -124,12 +118,6 @@ dependencies {
     //jpush
     implementation 'cn.jiguang.sdk:jcore:4.0.0'
     implementation 'cn.jiguang.sdk:jpush:4.8.5'
-
-    //umeng
-    implementation 'com.umeng.umsdk:common:9.5.0'// 必选
-    implementation 'com.umeng.umsdk:asms:1.4.1'// 必选
-    implementation 'com.umeng.umsdk:apm:1.7.0' // 错误分析模块改为独立库，看crash和性能数据请一定集成
-
 
     implementation 'com.google.android.material:material:1.5.0'
 
