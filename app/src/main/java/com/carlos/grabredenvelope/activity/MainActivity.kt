@@ -1,7 +1,11 @@
 package com.carlos.grabredenvelope.activity
 
 import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.carlos.cutils.base.adapter.CBaseMyPagerAdapter
 import com.carlos.cutils.listener.PermissionListener
@@ -11,6 +15,7 @@ import com.carlos.grabredenvelope.fragment.AboutFragment
 import com.carlos.grabredenvelope.fragment.ControlFragment
 import com.carlos.grabredenvelope.fragment.EmojiFragment
 import com.carlos.grabredenvelope.fragment.RecordFragment
+import com.carlos.grabredenvelope.notification.NotificationKits
 import kotlinx.android.synthetic.main.activity_main.viewPager
 
 /**
@@ -71,7 +76,12 @@ open class MainActivity : BaseActivity() {
 
         initView()
 
-        getPermissions()
+
+        //启动前台服务-开启常驻通知栏
+//        NotificationKits.startPermanentNotification(this)
+
+//        getPermissions()
+        requestPermissionNotification()
         addListener()
     }
 
@@ -106,4 +116,39 @@ open class MainActivity : BaseActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
+
+    private val POST_NOTIFICATIONS_REQUEST = 1002
+
+    private fun requestPermissionNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                POST_NOTIFICATIONS_REQUEST
+            )
+        } else {
+            // 如果是 Android 13 以下的版本，不需要申请通知权限
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == POST_NOTIFICATIONS_REQUEST) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 用户同意通知权限
+                //启动前台服务-开启常驻通知栏
+                NotificationKits.startPermanentNotification(this)
+            } else {
+                // 用户拒绝通知权限
+
+            }
+        }
+    }
+
 }

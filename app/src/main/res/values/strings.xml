@@ -5,6 +5,9 @@
     <string name="grab_wechat_envelope">抢微信红包服务</string>
     <string name="auto_send_emoji">自动发送表情</string>
 
+    <string name="ntf_resident_title">红包助手</string>
+    <string name="ntf_resident_content">运行中…</string>
+
 
     <string name="wechat_description">
         使用指南：使用前仔细看APP使用说明。辅助功能开启【抢微信红包】，APP 抢微信红包设置是否监控通知和聊天列表页面，同时可设置延迟时间。</string>
