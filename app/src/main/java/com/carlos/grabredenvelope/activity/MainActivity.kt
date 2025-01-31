@@ -16,6 +16,7 @@ import com.carlos.grabredenvelope.fragment.ControlFragment
 import com.carlos.grabredenvelope.fragment.EmojiFragment
 import com.carlos.grabredenvelope.fragment.RecordFragment
 import com.carlos.grabredenvelope.notification.NotificationKits
+import com.carlos.grabredenvelope.services.wechat.WechatService
 import kotlinx.android.synthetic.main.activity_main.viewPager
 
 /**
@@ -58,8 +59,6 @@ open class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private val WECHAT_SERVICE_NAME = "com.carlos.grabredenvelope/.services.WechatService"
-
     var fragments = mutableListOf<Fragment>(
         ControlFragment(),
         AboutFragment(),
@@ -76,11 +75,6 @@ open class MainActivity : BaseActivity() {
 
         initView()
 
-
-        //启动前台服务-开启常驻通知栏
-//        NotificationKits.startPermanentNotification(this)
-
-//        getPermissions()
         requestPermissionNotification()
         addListener()
     }
@@ -101,21 +95,10 @@ open class MainActivity : BaseActivity() {
                 val controlFragment = fragments[0] as ControlFragment
                 controlFragment.updateControlView(boolean)
             }
-        }, WECHAT_SERVICE_NAME)
+        }, "${packageName}/${WechatService::class.java.name}")
     }
 
-    private fun getPermissions() {
-        requestPermission(
-            100,
-            object : PermissionListener {
-                override fun permissionSuccess() {}
-                override fun permissionFail() {}
-            },
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-    }
+
 
     private val POST_NOTIFICATIONS_REQUEST = 1002
 
