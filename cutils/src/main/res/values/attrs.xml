@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    <attr name="orientation" format="enum"/>-->
+<!--    <declare-styleable name="CircleButton">-->
+
+<!--        <attr name="orientation" >-->
+<!--            <enum name="top" value="0" />-->
+<!--            <enum name="center_crop" value="1" />-->
+<!--            <enum name="center_inside" value="2" />-->
+<!--            <enum name="fit_center" value="3" />-->
+<!--            <enum name="fit_end" value="4" />-->
+<!--            <enum name="fit_start" value="5" />-->
+<!--            <enum name="fit_xy" value="6" />-->
+<!--            <enum name="matrix" value="7" />-->
+<!--        </attr>-->
+
+<!--    </declare-styleable>-->
+
+    <declare-styleable name = "RoundView">
+        <attr name = "color" format = "color" />
+    </declare-styleable>
+
+    <declare-styleable name = "RoundRectButton">
+        <attr name = "radius" format = "dimension" />
+        <attr name = "topLeftRadius" format = "dimension" />
+        <attr name = "topRightRadius" format = "dimension" />
+        <attr name = "bottomLeftRadius" format = "dimension" />
+        <attr name = "bottomRightRadius" format = "dimension" />
+        <attr name = "solidColor" format = "color" />
+    </declare-styleable>
+
+    <declare-styleable name = "RoundRectTextViewView">
+        <attr name = "radius"  />
+        <attr name = "topLeftRadius" />
+        <attr name = "topRightRadius" />
+        <attr name = "bottomLeftRadius" />
+        <attr name = "bottomRightRadius" />
+        <attr name = "solidColor" />
+    </declare-styleable>
+
+    <declare-styleable name="CTextView">
+        <attr name="horizantal_line" format="enum">
+            <enum name="center_line" value="0"/>
+            <enum name="bottom_line" value="1"/>
+        </attr>
+        <attr name="normal_font_size" format="dimension" />
+        <attr name="color"/>
+    </declare-styleable>
+
+</resources>
