@@ -18,7 +18,7 @@
     <application
         android:name=".MyApplication"
         android:icon="@mipmap/xiaobudian"
-        android:label="@string/app_name"
+        android:label="@string/app_name_main"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -26,6 +26,7 @@
         <activity
             android:name="com.carlos.grabredenvelope.activity.MainActivity"
             android:exported="true"
+            android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden">
@@ -39,7 +40,7 @@
         <service
             android:name=".services.wechat.WechatService"
             android:exported="true"
-            android:label="@string/grab_wechat_envelope"
+            android:label="@string/app_name_main"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter android:priority="1000">
                 <action android:name="android.accessibilityservice.AccessibilityService" />

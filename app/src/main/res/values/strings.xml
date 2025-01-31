@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">微信抢红包</string>
+    <string name="app_name" translatable="false">微信抢红包</string>
+    <string name="app_name_main" translatable="false">#微信抢红包</string>
+
     <string name="app_content">一点点</string>
 
-    <string name="grab_wechat_envelope">抢微信红包服务</string>
     <string name="auto_send_emoji">自动发送表情</string>
-
     <string name="ntf_resident_title">红包助手</string>
     <string name="ntf_resident_content">运行中…</string>
 
