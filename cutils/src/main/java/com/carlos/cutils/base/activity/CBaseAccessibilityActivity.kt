@@ -30,6 +30,10 @@ open class CBaseAccessibilityActivity : CBaseActivity() {
             )
     }
 
+    fun setAccessibilityServiceName(accessibilityServiceName: String) {
+        this.accessibilityServiceName = accessibilityServiceName
+    }
+
     fun addAccessibilityServiceListener(
         accessibilityServiceListeners: AccessibilityServiceListeners,
         accessibilityServiceName: String

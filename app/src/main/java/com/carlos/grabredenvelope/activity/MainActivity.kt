@@ -74,17 +74,21 @@ open class MainActivity : BaseActivity() {
         setContentView(view)
 
         initView()
-
         requestPermissionNotification()
         addListener()
+        checkWechatAccessibilityStatus()
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkWechatAccessibilityStatus()
+    }
 
     private fun initView() {
         val adapter = CBaseMyPagerAdapter(supportFragmentManager, fragments, titles)
         binding.viewPager.adapter = adapter
         binding.slidingTabs.setupWithViewPager(viewPager)
-        viewPager.offscreenPageLimit = 2
+        viewPager.offscreenPageLimit = fragments.size
     }
 
     private fun addListener() {
@@ -98,10 +102,13 @@ open class MainActivity : BaseActivity() {
         }, "${packageName}/${WechatService::class.java.name}")
     }
 
+    private fun checkWechatAccessibilityStatus() {
+        val controlFragment = fragments[0] as ControlFragment
+        controlFragment.updateControlView(checkStatus())
+    }
 
 
     private val POST_NOTIFICATIONS_REQUEST = 1002
-
     private fun requestPermissionNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==

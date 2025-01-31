@@ -31,9 +31,9 @@ android {
         applicationId "com.carlos.gbd"
         minSdkVersion 18
         targetSdkVersion 33
-        versionCode 360
-        versionName "3.6.0"
-        flavorDimensions "360" //和versionCode相同
+        versionCode 2
+        versionName "2"
+        flavorDimensions "2" //和versionCode相同
         ndk {
             //选择要添加的对应 cpu 类型的 .so 库。
             abiFilters 'armeabi-v7a', 'x86','arm64-v8a'
