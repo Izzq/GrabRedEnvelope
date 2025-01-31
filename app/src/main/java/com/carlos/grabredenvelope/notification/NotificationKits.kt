@@ -5,7 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 
 
 object NotificationKits {

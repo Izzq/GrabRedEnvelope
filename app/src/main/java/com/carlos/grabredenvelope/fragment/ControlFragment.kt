@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.activity.MainActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO

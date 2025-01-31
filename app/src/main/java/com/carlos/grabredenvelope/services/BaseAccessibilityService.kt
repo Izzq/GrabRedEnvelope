@@ -7,7 +7,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.accessibility.AccessibilityEvent
 import com.carlos.cutils.base.CBaseAccessibilityService
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.MyApplication
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.activity.MainActivity

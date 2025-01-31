@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.carlos.cutils.base.adapter.CBaseMyPagerAdapter
 import com.carlos.cutils.listener.PermissionListener
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.databinding.ActivityMainBinding
 import com.carlos.grabredenvelope.fragment.AboutFragment
 import com.carlos.grabredenvelope.fragment.ControlFragment

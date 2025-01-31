@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import com.carlos.cutils.extend.doubleCount
 import com.carlos.cutils.extend.getYearToMinute
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.db.DingDingRedEnvelopeDb
 import com.carlos.grabredenvelope.db.WechatRedEnvelopeDb

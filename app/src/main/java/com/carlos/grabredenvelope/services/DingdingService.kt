@@ -5,7 +5,7 @@ import com.carlos.cutils.extend.back
 import com.carlos.cutils.extend.findAndClickFirstNodeInfoByViewId
 import com.carlos.cutils.extend.gestureViewCenter
 import com.carlos.cutils.extend.getNodeInfosByViewId
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.db.DingDingRedEnvelope
 import com.carlos.grabredenvelope.db.DingDingRedEnvelopeDb
 import kotlinx.coroutines.GlobalScope

@@ -2,7 +2,7 @@ package com.carlos.grabredenvelope.data
 
 import android.annotation.SuppressLint
 import com.carlos.cutils.base.CBasePreferences
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.MyApplication
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import kotlinx.serialization.decodeFromString

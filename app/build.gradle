@@ -118,5 +118,7 @@ dependencies {
     //bug收集
     implementation "com.tencent.bugly:crashreport:4.1.9.3"
 
+    implementation 'com.blankj:utilcodex:1.30.6'
+
 }
 

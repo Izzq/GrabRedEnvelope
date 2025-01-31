@@ -1,6 +1,6 @@
 package com.carlos.grabredenvelope.services.wechat
 
-import com.carlos.cutils.util.LogUtils
+import com.blankj.utilcode.util.LogUtils
 
 /**
  *                             _ooOoo_
