@@ -26,6 +26,10 @@ abstract class CBaseAccessibilityService : AccessibilityService() {
         if (monitorPackageName.isNotEmpty() and (monitorPackageName != event.packageName)) {
             return
         }
+        if (event.className.isNullOrEmpty()) {
+            return
+        }
+
         currentClassName = event.className.toString()
         monitorAccessibilityEvent(event)
     }
@@ -37,16 +41,19 @@ abstract class CBaseAccessibilityService : AccessibilityService() {
                     monitorNotificationChanged(event)
                 }
             }
+
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
                 if (isMonitorWindow) {
                     monitorWindowChanged(event)
                 }
             }
+
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
                 if (isMonitorContent) {
                     monitorContentChanged(event)
                 }
             }
+
             AccessibilityEvent.TYPE_VIEW_CLICKED -> {
                 monitorViewClicked(event)
             }
@@ -59,7 +66,7 @@ abstract class CBaseAccessibilityService : AccessibilityService() {
 
     abstract fun monitorContentChanged(event: AccessibilityEvent)
 
-    open fun monitorViewClicked(event: AccessibilityEvent){}
+    open fun monitorViewClicked(event: AccessibilityEvent) {}
 
 //    override fun onServiceConnected() {
 //        super.onServiceConnected()
