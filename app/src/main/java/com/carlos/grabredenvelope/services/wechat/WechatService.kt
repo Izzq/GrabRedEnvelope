@@ -1,7 +1,10 @@
 package com.carlos.grabredenvelope.services.wechat
 
 import android.graphics.Path
+import android.os.Bundle
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
+import android.widget.EditText
 import com.blankj.utilcode.util.LogUtils
 import com.carlos.cutils.extend.back
 import com.carlos.cutils.extend.clickFirstNodeInfo
@@ -36,9 +39,25 @@ class WechatService : BaseAccessibilityService() {
     override var monitorPackageName = WECHAT_PACKAGE
     override var notificationTitle = RED_ENVELOPE_TITLE
 
+    private var emojitext = ""
+
+    @Volatile
+    private var emojiTimes = 0
+
+    @Volatile
+    private var emojiInterval = 0
+
+    @Volatile
+    private var emojiCount = 0
+
+    @Volatile
+    private var canSendEmoji = true
+
     override fun onCreate() {
         super.onCreate()
         WechatConstants.setVersion(AppUtils.getVersionName(WECHAT_PACKAGE))
+        loadEmojiConfig()
+        canSendEmoji = true
     }
 
     /**
@@ -202,6 +221,15 @@ class WechatService : BaseAccessibilityService() {
                 delay(delayTime)
                 back()
             }
+
+            if (canSendEmoji) {
+                val emojiState = RedEnvelopePreferences.emojiState
+                if (emojiState) {
+                    delay(1000L)
+                    loadEmojiConfig()
+                    sendMessage()
+                }
+            }
         }
         status = WAIT_NEW
         LogUtils.d("quit redenvelope detail page.")
@@ -218,4 +246,59 @@ class WechatService : BaseAccessibilityService() {
             WechatRedEnvelopeDb.insertData(wechatRedEnvelope)
         }
     }
+
+
+    //--表情 ------------------------------------------------------------------------------------
+
+
+    private fun loadEmojiConfig() {
+        emojitext = RedEnvelopePreferences.autoText
+        emojiTimes = RedEnvelopePreferences.emojiTimes
+        emojiInterval = RedEnvelopePreferences.emojiInterval
+        emojiCount = 0
+        LogUtils.d("text:$emojitext")
+        LogUtils.d("times:$emojiTimes")
+        LogUtils.d("interval:$emojiInterval")
+        LogUtils.d("count:$emojiCount")
+    }
+
+    /**
+     * 找到文本框输入表情，找到发送按钮点击循环执行
+     */
+    private fun sendMessage() {
+        if (emojiCount >= emojiTimes && emojiTimes != 0) {
+            emojiCount = 0
+            canSendEmoji = true
+            return
+        }
+        if (emojitext.isEmpty()) {
+            return
+        }
+        LogUtils.d("count:$emojiCount")
+
+        val accessibilityNodeInfo = getNodeInfosByViewId(WechatConstants.CHAT_EDITTEXT_ID) ?: return
+
+        for (editText in accessibilityNodeInfo) {
+            if (editText.className == EditText::class.java.name) {
+                val arguments = Bundle()
+                arguments.putCharSequence(
+                    AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                    emojitext
+                )
+                editText.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+
+                findAndClickFirstNodeInfoByViewId(WechatConstants.SEND_TEXT_ID)
+                LogUtils.d("send a message")
+
+                canSendEmoji = false
+
+                emojiCount++
+                GlobalScope.launch {
+                    delay(emojiInterval.toLong())
+                    sendMessage()
+                }
+            }
+        }
+    }
+
 }

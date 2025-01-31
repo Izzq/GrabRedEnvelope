@@ -50,19 +50,6 @@
                 android:resource="@xml/wechat_service" />
         </service>
 
-        <service
-            android:name=".services.EmojiService"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/auto_send_emoji"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/emoji_service" />
-        </service>
 
         <activity android:name="com.carlos.grabredenvelope.receiver.MessageActivity" />
 
