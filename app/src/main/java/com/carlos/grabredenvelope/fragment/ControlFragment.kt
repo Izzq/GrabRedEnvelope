@@ -1,5 +1,6 @@
 package com.carlos.grabredenvelope.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.activity.MainActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
+import com.carlos.grabredenvelope.activity.PhonePointActivity
 import kotlinx.android.synthetic.main.fragment_control.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -56,11 +58,13 @@ import kotlinx.coroutines.withContext
  * Github: https://github.com/xbdcc/.
  * Created by 小不点 on 2016/5/27.
  */
-class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekBarChangeListener {
+class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
+    SeekBar.OnSeekBarChangeListener {
 
     private var wechatControlVO = WechatControlVO()
     private var t_putong: Int = 0
     private var t_lingqu: Int = 0
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -141,6 +145,11 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
                 }
             }
         }
+
+
+        btn_set_reb_btn_point.setOnClickListener {
+            PhonePointActivity.start(requireActivity())
+        }
     }
 
 
@@ -205,5 +214,23 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), SeekBar.OnSeekB
 
     override fun onStopTrackingTouch(seekBar: SeekBar) {
 
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PhonePointActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // 获取返回的坐标
+            val x = data?.getIntExtra("x", 0) ?: 0
+            val y = data?.getIntExtra("y", 0) ?: 0
+
+            // 显示坐标
+            et_pointX.setText("$x")
+            et_pointY.setText("$y")
+
+            wechatControlVO.pointX = et_pointX.text.toString().toLong()
+            wechatControlVO.pointY = et_pointY.text.toString().toLong()
+            RedEnvelopePreferences.wechatControl = wechatControlVO
+        }
     }
 }

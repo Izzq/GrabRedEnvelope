@@ -10,6 +10,16 @@
     </style>
 
 
+    <style name="ssTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- 去除标题栏 -->
+        <item name="windowNoTitle">true</item>
+        <!-- 全屏 -->
+        <item name="android:windowFullscreen">true</item>
+        <!-- 去除ActionBar -->
+        <item name="windowActionBar">false</item>
+    </style>
+
+
     <!-- 分割线-->
     <style name="view_line">
         <item name="android:layout_height">@dimen/line_height</item>

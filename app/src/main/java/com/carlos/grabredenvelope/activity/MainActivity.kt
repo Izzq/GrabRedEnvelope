@@ -1,19 +1,20 @@
 package com.carlos.grabredenvelope.activity
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.carlos.cutils.base.adapter.CBaseMyPagerAdapter
-import com.carlos.cutils.listener.PermissionListener
 import com.blankj.utilcode.util.LogUtils
+import com.carlos.cutils.base.adapter.CBaseMyPagerAdapter
 import com.carlos.grabredenvelope.databinding.ActivityMainBinding
 import com.carlos.grabredenvelope.fragment.AboutFragment
 import com.carlos.grabredenvelope.fragment.ControlFragment
 import com.carlos.grabredenvelope.fragment.EmojiFragment
+import com.carlos.grabredenvelope.fragment.IMainFragment
 import com.carlos.grabredenvelope.fragment.RecordFragment
 import com.carlos.grabredenvelope.notification.NotificationKits
 import com.carlos.grabredenvelope.services.wechat.WechatService
@@ -105,6 +106,16 @@ open class MainActivity : BaseActivity() {
     private fun checkWechatAccessibilityStatus() {
         val controlFragment = fragments[0] as ControlFragment
         controlFragment.updateControlView(checkStatus())
+    }
+
+    // 接收第二个 Activity 返回的结果
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        fragments.forEach {
+            if (it is IMainFragment) {
+                it.onActivityResult(requestCode, resultCode, data)
+            }
+        }
     }
 
 

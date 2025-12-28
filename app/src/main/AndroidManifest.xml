@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <!-- 通知权限 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -22,9 +24,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!--适配华为（huawei）刘海屏-->
+        <meta-data
+            android:name="android.notch_support"
+            android:value="true" />
+
+        <!--适配小米（xiaomi）刘海屏-->
+        <meta-data
+            android:name="notch.config"
+            android:value="portrait|landscape" />
+
 
         <activity
             android:name="com.carlos.grabredenvelope.activity.MainActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
@@ -36,6 +49,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.carlos.grabredenvelope.receiver.MessageActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".activity.PhonePointActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:exported="false"
+            android:theme="@style/ssTheme" />
+
 
         <service
             android:name=".services.wechat.WechatService"
@@ -49,10 +75,6 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/wechat_service" />
         </service>
-
-
-        <activity android:name="com.carlos.grabredenvelope.receiver.MessageActivity" />
-
 
         <!--前台服务 start-->
         <service android:name=".notification.PermanentService" />

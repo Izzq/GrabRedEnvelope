@@ -202,7 +202,7 @@
                     android:hint="x"
                     android:inputType="numberDecimal"
                     android:maxLength="4"
-                    tools:text="518" />
+                    tools:text="551" />
 
                 <EditText
                     android:id="@+id/et_pointY"
@@ -211,7 +211,14 @@
                     android:hint="y"
                     android:inputType="numberDecimal"
                     android:maxLength="4"
-                    tools:text="1447" />
+                    tools:text="1556" />
+
+                <Button
+                    android:id="@+id/btn_set_reb_btn_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="获取" />
+
             </LinearLayout>
 
             <TextView
