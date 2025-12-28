@@ -1,16 +1,15 @@
 package com.carlos.grabredenvelope.services.wechat
 
-import android.graphics.Path
 import android.os.Bundle
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.EditText
 import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.ShellUtils
 import com.carlos.cutils.extend.back
 import com.carlos.cutils.extend.clickFirstNodeInfo
 import com.carlos.cutils.extend.findAndClickFirstNodeInfoByViewId
 import com.carlos.cutils.extend.findAndClickFirstNodeInfoByViewIdContainsText
-import com.carlos.cutils.extend.gesturePath
 import com.carlos.cutils.extend.getNodeInfosByViewId
 import com.carlos.cutils.util.AppUtils
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
@@ -26,12 +25,13 @@ import com.carlos.grabredenvelope.services.wechat.WechatConstants.RED_ENVELOPE_O
 import com.carlos.grabredenvelope.services.wechat.WechatConstants.RED_ENVELOPE_RECT_TITLE_ID
 import com.carlos.grabredenvelope.services.wechat.WechatConstants.RED_ENVELOPE_TITLE
 import com.carlos.grabredenvelope.services.wechat.WechatConstants.RED_ENVELOPE_TITLE_ID
-import com.carlos.grabredenvelope.services.wechat.WechatConstants.WECHAT_LUCKYMONEYDETAILUI_ACTIVITY
 import com.carlos.grabredenvelope.services.wechat.WechatConstants.WECHAT_LUCKYMONEY_ACTIVITY
+import com.carlos.grabredenvelope.services.wechat.WechatConstants.WECHAT_LUCKYMONEY_ACTIVITY1
 import com.carlos.grabredenvelope.services.wechat.WechatConstants.WECHAT_PACKAGE
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 
 class WechatService : BaseAccessibilityService() {
@@ -128,14 +128,50 @@ class WechatService : BaseAccessibilityService() {
      */
     private fun grabRedEnvelope() {
         /* 发现红包点击进入领取红包页面 */
+        if (RedEnvelopePreferences.wechatControl.isCustomListClick) {
+            LogUtils.d("grabRedEnvelopeCustom")
+            grabRedEnvelopeCustom()
+        } else {
+            LogUtils.d("grabRedEnvelopeAuto")
+            grabRedEnvelopeAuto()
+        }
+    }
+
+    /**
+     * 对话页面监控点击红包, 从最下面开始点起
+     */
+    private fun grabRedEnvelopeAuto() {
+        /* 发现红包点击进入领取红包页面 */
         val ifGrabSelf = RedEnvelopePreferences.wechatControl.ifGrabSelf
         if (findAndClickFirstNodeInfoByViewId(
-                RED_ENVELOPE_ID, RED_ENVELOPE_FLAG_ID, RED_ENVELOPE_BEEN_GRAB_ID, !ifGrabSelf, true
+                viewId = RED_ENVELOPE_ID,
+                childExistId = RED_ENVELOPE_FLAG_ID,
+                childNotExistIds = RED_ENVELOPE_BEEN_GRAB_ID,
+                isJustClickLeft = !ifGrabSelf,
+                isReverse = true,
+                callback = {
+
+                }
             )
         ) {
             status = HAS_CLICKED
             LogUtils.d("received a redenvelope and click.")
         }
+    }
+
+    /**
+     * 对话页面监控点击红包, 从最下面开始点起
+     */
+    private fun grabRedEnvelopeCustom() {
+        val delayTime = 200L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
+        val pointX = RedEnvelopePreferences.wechatControl.listPointX.toFloat()
+        val pointY = RedEnvelopePreferences.wechatControl.listPointY.toFloat()
+
+        LogUtils.d("received delay custom open time:$delayTime")
+        executeAdbCommandClick(pointX, pointY, delayTime)
+
+        status = HAS_CLICKED
+        LogUtils.d("received a redenvelope and click.")
     }
 
     /**
@@ -145,7 +181,7 @@ class WechatService : BaseAccessibilityService() {
         // 进入红包页面点击开按钮
         if (RedEnvelopePreferences.wechatControl.isCustomClick) {
             LogUtils.d("openRedEnvelopeCustom:" + event.className)
-            openRedEnvelopeCustom()
+            openRedEnvelopeCustom(event)
         } else {
             LogUtils.d("openRedEnvelopeAuto:" + event.className)
             openRedEnvelopeAuto(event)
@@ -183,23 +219,33 @@ class WechatService : BaseAccessibilityService() {
     }
 
     /**
+     * 是否为红包弹窗
+     */
+    private fun isRedEnvelopeDialog(className: CharSequence?): Boolean {
+        return className == WECHAT_LUCKYMONEY_ACTIVITY || className == WECHAT_LUCKYMONEY_ACTIVITY1
+    }
+
+    /**
      * Android7.0以上有效，坐标点点击开按钮
      */
-    private fun openRedEnvelopeCustom() {
-        if (status != HAS_CLICKED) {
+    private fun openRedEnvelopeCustom(event: AccessibilityEvent) {
+        // 如果当前不在聊天不是微信红包弹框或者已经没执行点击红包操作，则不执行拆的操作
+        if ((!isRedEnvelopeDialog(event.className)) or (status != HAS_CLICKED)) {
             return
         }
 
-        val path = Path()
-        if (RedEnvelopePreferences.wechatControl.isCustomClick) {
-            path.moveTo(
-                RedEnvelopePreferences.wechatControl.pointX.toFloat(),
-                RedEnvelopePreferences.wechatControl.pointY.toFloat()
-            )
-        }
         val delayTime = 500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
+        val pointX = RedEnvelopePreferences.wechatControl.pointX.toFloat()
+        val pointY = RedEnvelopePreferences.wechatControl.pointY.toFloat()
+
+//        val path = Path()
+//        path.moveTo(pointX, pointY)
+//        LogUtils.d("delay custom open time:$delayTime")
+//        gesturePath(path, delayTime, interval = 500, times = 3)
+
         LogUtils.d("delay custom open time:$delayTime")
-        gesturePath(path, delayTime, interval = 500, times = 3)
+        executeAdbCommandClick(pointX, pointY, delayTime)
+
         status = HAS_OPENED
         LogUtils.d("opened a redenvelope")
     }
@@ -209,7 +255,7 @@ class WechatService : BaseAccessibilityService() {
      */
     private fun quitEnvelope(event: AccessibilityEvent) {
         // 如果当前页面不是红包详情页或者没有点开过拆按钮，则不执行退出操作
-        if ((event.className != WECHAT_LUCKYMONEYDETAILUI_ACTIVITY) or (status != HAS_OPENED)) {
+        if ((!isRedEnvelopeDialog(event.className)) or (status != HAS_CLICKED)) {
             return
         }
 
@@ -297,6 +343,45 @@ class WechatService : BaseAccessibilityService() {
                     delay(emojiInterval.toLong())
                     sendMessage()
                 }
+            }
+        }
+    }
+
+
+    /**
+     * 通过adb命令点击
+     */
+//    private fun executeAdbCommandClick(x: Float, y: Float, delayTime: Long) {
+//        GlobalScope.launch {
+//            delay(delayTime)
+//            try {
+//                // 执行 adb shell 命令模拟点击
+//                val command = "adb shell input tap $x $y"
+//                LogUtils.d("command=${command}")
+//
+//                val process = Runtime.getRuntime().exec(command)
+//                process.waitFor()  // 等待命令执行完成
+//            } catch (e: IOException) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+
+    /**
+     * 通过adb命令点击
+     */
+    private fun executeAdbCommandClick(x: Float, y: Float, delayTime: Long) {
+        GlobalScope.launch {
+            delay(delayTime)
+            try {
+//                val command = "adb shell input tap $x $y"
+//                val command = "adb shell input tap ${x.toInt()} ${y.toInt()}"
+                val command = "input tap ${x.toInt()} ${y.toInt()}"
+
+                val result = ShellUtils.execCmd(command, false, true)
+                LogUtils.d("result:$result")
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
     }

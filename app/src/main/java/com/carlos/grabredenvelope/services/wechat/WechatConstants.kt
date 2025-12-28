@@ -42,8 +42,10 @@ object WechatConstants {
 
     val WECHAT_PACKAGE = "com.tencent.mm"
     /* 页面 */
-    val WECHAT_LUCKYMONEY_ACTIVITY =
-        "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyNotHookReceiveUI" //微信红包弹框
+    val WECHAT_LUCKYMONEY_ACTIVITY = "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyNotHookReceiveUI" //微信红包弹框
+    val WECHAT_LUCKYMONEY_ACTIVITY1 = "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyNewReceiveUI" //微信红包弹框
+
+
     val WECHAT_LUCKYMONEYDETAILUI_ACTIVITY =
         "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyDetailUI" //微信红包详情页
 

@@ -95,7 +95,10 @@ class DingdingService : BaseAccessibilityService() {
                 DINGDING_CHAT_ITEM_ID,
                 DINGDING_RED_ENVELOPE_TYPE_ID,
                 DINGDING_REDENVELOPE_COVER,
-                true
+                true,
+                callback = {
+
+                }
             )
         ) {
             status = HAS_CLICKED

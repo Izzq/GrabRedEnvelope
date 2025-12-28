@@ -79,14 +79,16 @@ fun AccessibilityService.findAndClickFirstNodeInfoByViewId(
     childNotExistIds: String,
     isJustClickLeft: Boolean,
     isReverse: Boolean = false,
-    accessibilityNodeInfo: AccessibilityNodeInfo? = rootInActiveWindow
+    accessibilityNodeInfo: AccessibilityNodeInfo? = rootInActiveWindow,
+    callback: ((Boolean) -> Unit)? = null,
 ): Boolean = AccessibilityServiceUtils.findAndClickFirstNodeInfoByViewId(
     viewId,
     childExistId,
     childNotExistIds,
     isJustClickLeft,
     isReverse,
-    accessibilityNodeInfo
+    accessibilityNodeInfo,
+    callback
 )
 
 fun AccessibilityService.findAndClickFirstNodeInfoByViewIdContainsText(
@@ -94,13 +96,15 @@ fun AccessibilityService.findAndClickFirstNodeInfoByViewIdContainsText(
     childId: String,
     childIdContainsText: String,
     isReverse: Boolean = false,
-    accessibilityNodeInfo: AccessibilityNodeInfo? = rootInActiveWindow
+    accessibilityNodeInfo: AccessibilityNodeInfo? = rootInActiveWindow,
+    callback: ((Boolean) -> Unit)? = null,
 ) = AccessibilityServiceUtils.findAndClickFirstNodeInfoByViewIdContainsText(
     viewId,
     childId,
     childIdContainsText,
     isReverse,
-    accessibilityNodeInfo
+    accessibilityNodeInfo,
+    callback
 )
 
 fun AccessibilityService.gesturePath(path: Path, startTime: Long = 200L, duration: Long = 100L) {
@@ -139,8 +143,12 @@ fun AccessibilityService.back() {
     performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
 }
 
-suspend fun AccessibilityService.getNodeInfosByViewId(viewId: String, interval: Long, times: Int): MutableList<AccessibilityNodeInfo>? {
-    for(i in 0 until  times) {
+suspend fun AccessibilityService.getNodeInfosByViewId(
+    viewId: String,
+    interval: Long,
+    times: Int
+): MutableList<AccessibilityNodeInfo>? {
+    for (i in 0 until times) {
         val data = getNodeInfosByViewId(viewId)
         if (data.isNullOrEmpty().not()) {
             return data
@@ -150,9 +158,15 @@ suspend fun AccessibilityService.getNodeInfosByViewId(viewId: String, interval: 
     return null
 }
 
-fun AccessibilityService.gesturePath(path: Path, startTime: Long = 200L, duration: Long = 100L, interval: Long, times: Int) {
+fun AccessibilityService.gesturePath(
+    path: Path,
+    startTime: Long = 200L,
+    duration: Long = 100L,
+    interval: Long,
+    times: Int
+) {
     GlobalScope.launch {
-        for(i in 0 until  times) {
+        for (i in 0 until times) {
             LogUtils.d("times:$i");
             gesturePath(path, startTime)
             delay(interval)
