@@ -51,5 +51,11 @@ data class WechatControlVO(
     @Transient
     var isCustomClick: Boolean = false,
     var pointX: Long = 0,
-    var pointY: Long = 0
+    var pointY: Long = 0,
+
+    @Transient
+    var isCustomListClick: Boolean = false,
+    var listPointX: Long = 0,
+    var listPointY: Long = 0,
+
 )

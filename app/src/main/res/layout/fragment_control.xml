@@ -221,6 +221,43 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/ll_custom_list_click"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/cb_custom_list_click"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="自定打开列表红包坐标：" />
+
+                <EditText
+                    android:id="@+id/et_list_pointX"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="x"
+                    android:inputType="numberDecimal"
+                    android:maxLength="4"
+                    tools:text="551" />
+
+                <EditText
+                    android:id="@+id/et_list_pointY"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="y"
+                    android:inputType="numberDecimal"
+                    android:maxLength="4"
+                    tools:text="1556" />
+
+                <Button
+                    android:id="@+id/btn_set_reb_btn_list_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="获取" />
+
+            </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

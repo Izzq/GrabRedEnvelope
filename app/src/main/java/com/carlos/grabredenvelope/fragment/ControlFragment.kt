@@ -12,10 +12,29 @@ import androidx.core.widget.addTextChangedListener
 import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.activity.MainActivity
+import com.carlos.grabredenvelope.activity.PhonePointActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
-import com.carlos.grabredenvelope.activity.PhonePointActivity
-import kotlinx.android.synthetic.main.fragment_control.*
+import kotlinx.android.synthetic.main.fragment_control.btnTest
+import kotlinx.android.synthetic.main.fragment_control.btn_set_reb_btn_list_point
+import kotlinx.android.synthetic.main.fragment_control.btn_set_reb_btn_point
+import kotlinx.android.synthetic.main.fragment_control.cb_custom_click
+import kotlinx.android.synthetic.main.fragment_control.cb_custom_list_click
+import kotlinx.android.synthetic.main.fragment_control.cb_if_grab_self
+import kotlinx.android.synthetic.main.fragment_control.cb_qq_control
+import kotlinx.android.synthetic.main.fragment_control.cb_wechat_chat_control
+import kotlinx.android.synthetic.main.fragment_control.cb_wechat_notification_control
+import kotlinx.android.synthetic.main.fragment_control.et_list_pointX
+import kotlinx.android.synthetic.main.fragment_control.et_list_pointY
+import kotlinx.android.synthetic.main.fragment_control.et_pointX
+import kotlinx.android.synthetic.main.fragment_control.et_pointY
+import kotlinx.android.synthetic.main.fragment_control.et_text_filters
+import kotlinx.android.synthetic.main.fragment_control.ll_custom_click
+import kotlinx.android.synthetic.main.fragment_control.ll_custom_list_click
+import kotlinx.android.synthetic.main.fragment_control.sb_qq_lingqu
+import kotlinx.android.synthetic.main.fragment_control.sb_qq_putong
+import kotlinx.android.synthetic.main.fragment_control.tv_qq_lingqu
+import kotlinx.android.synthetic.main.fragment_control.tv_qq_putong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -82,6 +101,10 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
                 .show()
         }
 
+        sb_qq_putong.setOnSeekBarChangeListener(this)
+        sb_qq_lingqu.setOnSeekBarChangeListener(this)
+
+
         cb_wechat_notification_control.setOnCheckedChangeListener { buttonView, isChecked ->
             wechatControlVO.isMonitorNotification = isChecked
             RedEnvelopePreferences.wechatControl = wechatControlVO
@@ -95,14 +118,11 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
 
-        sb_qq_putong.setOnSeekBarChangeListener(this)
-        sb_qq_lingqu.setOnSeekBarChangeListener(this)
 
         cb_custom_click.setOnCheckedChangeListener { buttonView, isChecked ->
             wechatControlVO.isCustomClick = isChecked
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
-
         et_pointX.addTextChangedListener {
             if (et_pointX.text.isNullOrEmpty()) {
                 wechatControlVO.pointX = 0
@@ -111,7 +131,6 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
             }
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
-
         et_pointY.addTextChangedListener {
             if (et_pointY.text.isNullOrEmpty()) {
                 wechatControlVO.pointY = 0
@@ -121,10 +140,33 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
 
+        cb_custom_list_click.setOnCheckedChangeListener { buttonView, isChecked ->
+            wechatControlVO.isCustomListClick = isChecked
+            RedEnvelopePreferences.wechatControl = wechatControlVO
+        }
+        et_list_pointX.addTextChangedListener {
+            if (et_list_pointX.text.isNullOrEmpty()) {
+                wechatControlVO.listPointX = 0
+            } else {
+                wechatControlVO.listPointX = et_list_pointX.text.toString().toLong()
+            }
+            RedEnvelopePreferences.wechatControl = wechatControlVO
+        }
+        et_list_pointY.addTextChangedListener {
+            if (et_list_pointY.text.isNullOrEmpty()) {
+                wechatControlVO.listPointY = 0
+            } else {
+                wechatControlVO.listPointY = et_list_pointY.text.toString().toLong()
+            }
+            RedEnvelopePreferences.wechatControl = wechatControlVO
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ll_custom_click.visibility = View.VISIBLE
+            ll_custom_list_click.visibility = View.VISIBLE
         } else {
             ll_custom_click.visibility = View.GONE
+            ll_custom_list_click.visibility = View.GONE
         }
 
         et_text_filters.setText(RedEnvelopePreferences.grabFilter)
@@ -146,9 +188,20 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
             }
         }
 
-
+//
+        //设置红包弹窗点击坐标
         btn_set_reb_btn_point.setOnClickListener {
-            PhonePointActivity.start(requireActivity())
+            PhonePointActivity.start(
+                requireActivity(),
+                PhonePointActivity.SET_OPEN_RED_POINT_REQUEST_CODE
+            )
+        }
+        //设置聊天窗点击坐标
+        btn_set_reb_btn_list_point.setOnClickListener {
+            PhonePointActivity.start(
+                requireActivity(),
+                PhonePointActivity.SET_OPEN_LIST_RED_POINT_REQUEST_CODE
+            )
         }
     }
 
@@ -172,9 +225,15 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
         } else {
             tv_qq_lingqu.text = "红包领取页关闭时间：" + t_lingqu / 10.0 + "s"
         }
+
+
         cb_custom_click.isChecked = RedEnvelopePreferences.wechatControl.isCustomClick
         et_pointX.setText(RedEnvelopePreferences.wechatControl.pointX.toString())
         et_pointY.setText(RedEnvelopePreferences.wechatControl.pointY.toString())
+
+        cb_custom_list_click.isChecked = RedEnvelopePreferences.wechatControl.isCustomListClick
+        et_list_pointX.setText(RedEnvelopePreferences.wechatControl.listPointX.toString())
+        et_list_pointY.setText(RedEnvelopePreferences.wechatControl.listPointY.toString())
 
         val mainActivity = activity as MainActivity
         updateControlView(mainActivity.checkStatus())
@@ -219,7 +278,8 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PhonePointActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        //获取红包弹窗点击坐标
+        if (requestCode == PhonePointActivity.SET_OPEN_RED_POINT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // 获取返回的坐标
             val x = data?.getIntExtra("x", 0) ?: 0
             val y = data?.getIntExtra("y", 0) ?: 0
@@ -230,6 +290,18 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
             wechatControlVO.pointX = et_pointX.text.toString().toLong()
             wechatControlVO.pointY = et_pointY.text.toString().toLong()
+            RedEnvelopePreferences.wechatControl = wechatControlVO
+        } else if (requestCode == PhonePointActivity.SET_OPEN_LIST_RED_POINT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // 获取返回的坐标
+            val x = data?.getIntExtra("x", 0) ?: 0
+            val y = data?.getIntExtra("y", 0) ?: 0
+
+            // 显示坐标
+            et_list_pointX.setText("$x")
+            et_list_pointY.setText("$y")
+
+            wechatControlVO.listPointX = et_list_pointX.text.toString().toLong()
+            wechatControlVO.listPointY = et_list_pointY.text.toString().toLong()
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
     }

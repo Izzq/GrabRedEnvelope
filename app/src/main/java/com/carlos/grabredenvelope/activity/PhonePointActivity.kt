@@ -2,15 +2,12 @@ package com.carlos.grabredenvelope.activity
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.RectF
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
-import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -19,7 +16,6 @@ import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.view.OverlayView
 import com.gyf.immersionbar.BarHide
-import com.gyf.immersionbar.ktx.hideStatusBar
 import com.gyf.immersionbar.ktx.immersionBar
 import kotlinx.android.synthetic.main.activity_phone_point.iv_back
 
@@ -30,11 +26,15 @@ class PhonePointActivity : AppCompatActivity() {
 
     companion object {
 
-        const val REQUEST_CODE = 200
+        //设置红包弹窗点击坐标
+        const val SET_OPEN_RED_POINT_REQUEST_CODE = 1000
 
-        fun start(context: Activity) {
+        //设置聊天窗点击坐标
+        const val SET_OPEN_LIST_RED_POINT_REQUEST_CODE = 2000
+
+        fun start(context: Activity, requestCode: Int) {
             val intent = Intent(context, PhonePointActivity::class.java)
-            context.startActivityForResult(intent, REQUEST_CODE)
+            context.startActivityForResult(intent, requestCode)
         }
 
     }
