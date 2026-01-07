@@ -57,7 +57,7 @@ object PermanentNotification {
                 }, getPendingIntentFlags()
             )
 
-            remoteViews?.setOnClickPendingIntent(R.id.rl_info, norIntent)
+//            remoteViews?.setOnClickPendingIntent(R.id.rl_info, norIntent)
 
             val channelId = "residentNotificationId100"
             val channelName = "residentNotification100"

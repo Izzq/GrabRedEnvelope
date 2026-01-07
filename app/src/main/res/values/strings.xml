@@ -1,13 +1,13 @@
 <resources>
-    <string name="app_name" translatable="false">控制中心</string>
-    <string name="app_name_main" translatable="false">#控制中心</string>
+    <string name="app_name" translatable="false">SoSo Center</string>
+    <string name="app_name_main" translatable="false">#SoSo Center</string>
 
     <string name="app_content">一点点</string>
 
     <string name="auto_send_emoji">#自动发送表情</string>
 
-    <string name="ntf_resident_title">红包助手</string>
-    <string name="ntf_resident_content">运行中…</string>
+    <string name="ntf_resident_title">SoSo Center Notification</string>
+    <string name="ntf_resident_content">…</string>
 
 
     <string name="wechat_description">
