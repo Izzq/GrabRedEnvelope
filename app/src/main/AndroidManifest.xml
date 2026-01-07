@@ -78,7 +78,7 @@
         </service>
 
         <service
-            android:name=".services.test.RedPacketService"
+            android:name=".services.test.MyAccessibilityService"
             android:label="@string/test_service_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="false">

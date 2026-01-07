@@ -18,8 +18,6 @@ import com.carlos.grabredenvelope.fragment.EmojiFragment
 import com.carlos.grabredenvelope.fragment.IMainFragment
 import com.carlos.grabredenvelope.fragment.RecordFragment
 import com.carlos.grabredenvelope.notification.NotificationKits
-import com.carlos.grabredenvelope.services.test.MyAccessibilityService
-import com.carlos.grabredenvelope.services.test.RedPacketService
 import com.carlos.grabredenvelope.services.wechat.WechatService
 
 /**
