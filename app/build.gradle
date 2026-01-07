@@ -1,11 +1,12 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.greenrobot.greendao' // apply plugin
-apply plugin: 'kotlinx-serialization'
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "com.google.devtools.ksp"
+    id "org.jetbrains.kotlin.plugin.serialization"
+    id "kotlin-parcelize"
+}
 
 
-apply plugin: 'org.greenrobot.greendao'
 
 def defaultPropertiesFile = rootProject.file("buildsystem/default.properties")
 def defaultProperties = new Properties()
@@ -17,6 +18,30 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    namespace 'com.carlos.grabredenvelope'
+    compileSdk 35
+    defaultConfig {
+        applicationId "com.carlos.gbd"
+        minSdk 26
+        targetSdk 35
+        versionCode 2
+        versionName "2"
+
+        ndk {
+            //选择要添加的对应 cpu 类型的 .so 库。
+            abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a'
+            // 还可以添加 'armeabi', 'arm64-v8a', 'x86_64', 'mips', 'mips64'
+        }
+
+        resConfigs 'zh'
+        multiDexEnabled true
+    }
+
+    sourceSets {
+        main.java.srcDirs = ["src/main/java"]
+    }
+
+
     signingConfigs {
         release {
             keyAlias defaultProperties['keyAlias']
@@ -25,24 +50,7 @@ android {
             storePassword defaultProperties['storePassword']
         }
     }
-    compileSdkVersion 33
 
-    defaultConfig {
-        applicationId "com.carlos.gbd"
-        minSdkVersion 18
-        targetSdkVersion 33
-        versionCode 2
-        versionName "2"
-        flavorDimensions "2" //和versionCode相同
-        ndk {
-            //选择要添加的对应 cpu 类型的 .so 库。
-            abiFilters 'armeabi-v7a', 'x86','arm64-v8a'
-            // 还可以添加 'armeabi', 'arm64-v8a', 'x86_64', 'mips', 'mips64'
-        }
-
-        resConfigs 'zh'
-        multiDexEnabled true
-    }
     buildTypes {
         release {
             minifyEnabled false
@@ -56,70 +64,62 @@ android {
         }
     }
 
-
-    //多渠道打包
-    productFlavors {
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-    buildFeatures {
-        viewBinding {
-            enabled = true
-        }
+    kotlinOptions {
+        jvmTarget = '17'
     }
-    namespace 'com.carlos.grabredenvelope'
 
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
     }
 
-}
-
-
-configurations.all {
-
-    /**
-     * 用于控制SNAPSHOT版本下载刷新频率，默认每隔24小时，gradle会检查一次依赖
-     * Release版本如果本地已下载则不会主动从镜像下载
-     */
-    // release check for updates every build
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-
-}
-
-//修改APK名字
-android.applicationVariants.all { variant ->
-    variant.outputs.all {
-        outputFileName = "GrabRedEnvelope${versionName}.apk"
+    buildFeatures {
+        buildConfig true
+        viewBinding true
     }
+
+    bundle {
+        language {//OPPO 有台机子多语言不生效，暂时屏蔽语言的拆包
+            enableSplit = false
+        }
+    }
+
+    //修改APK名字
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "GrabRedEnvelope${versionName}.apk"
+        }
+    }
+
+
 }
 
-greendao {
-    schemaVersion 2//数据库版本号
-    daoPackage 'com.carlos.grabredenvelope.db'//设置DaoMaster、DaoSession、Dao包名
-    targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
-    //targetGenDirTest：设置生成单元测试目录
-    //generateTests：设置自动生成单元测试用例
-}
+
+
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
+//    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+    implementation libs.bundles.lifecycle
 
-//    implementation 'com.carlos.cutils:cutils:0.0.28'
-//    implementation 'com.github.xbdcc:cutils:0.0.30-SNAPSHOT'
-    implementation project(':cutils')
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
+    implementation libs.kotlinx.serialization.json
+    implementation libs.kotlin.immutable.collections
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.swiperefreshlayout
 
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.gson
 
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation libs.bundles.room
+    ksp libs.androidx.room.compiler
 
-    implementation 'org.greenrobot:greendao:3.2.2' // add library
-
-    implementation 'androidx.multidex:multidex:2.0.1'
 
     //bug收集
     implementation "com.tencent.bugly:crashreport:4.1.9.3"
@@ -132,6 +132,11 @@ dependencies {
     // kotlin扩展（可选）
     implementation 'com.geyifeng.immersionbar:immersionbar-ktx:3.2.2'
 
+    implementation project(':cutils')
+
+    implementation 'androidx.multidex:multidex:2.0.1'
+
+//    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 }
 

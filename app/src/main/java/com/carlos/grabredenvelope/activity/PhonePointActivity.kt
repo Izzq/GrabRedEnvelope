@@ -14,10 +14,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.R
+import com.carlos.grabredenvelope.databinding.ActivityPhonePointBinding
+import com.carlos.grabredenvelope.extensions.viewBinding
 import com.carlos.grabredenvelope.view.OverlayView
 import com.gyf.immersionbar.BarHide
 import com.gyf.immersionbar.ktx.immersionBar
-import kotlinx.android.synthetic.main.activity_phone_point.iv_back
 
 /**
  * 获取点击坐标
@@ -38,6 +39,10 @@ class PhonePointActivity : AppCompatActivity() {
         }
 
     }
+
+
+    private val binding by viewBinding(ActivityPhonePointBinding::inflate)
+
 
     private val REQ_PICK_IMAGE = 1001
     private val REQUEST_STORAGE_PERMISSION = 2001
@@ -78,7 +83,7 @@ class PhonePointActivity : AppCompatActivity() {
             }
         }
 
-        iv_back.setOnClickListener {
+        binding.ivBack.setOnClickListener {
             val intent = Intent()
             intent.putExtra("x", mViewX)
             intent.putExtra("y", mViewY)

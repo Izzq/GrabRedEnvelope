@@ -11,14 +11,15 @@ import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.LogUtils
 import com.carlos.cutils.base.adapter.CBaseMyPagerAdapter
 import com.carlos.grabredenvelope.databinding.ActivityMainBinding
+import com.carlos.grabredenvelope.extensions.viewBinding
 import com.carlos.grabredenvelope.fragment.AboutFragment
 import com.carlos.grabredenvelope.fragment.ControlFragment
 import com.carlos.grabredenvelope.fragment.EmojiFragment
 import com.carlos.grabredenvelope.fragment.IMainFragment
 import com.carlos.grabredenvelope.fragment.RecordFragment
 import com.carlos.grabredenvelope.notification.NotificationKits
+import com.carlos.grabredenvelope.services.test.MyAccessibilityService
 import com.carlos.grabredenvelope.services.wechat.WechatService
-import kotlinx.android.synthetic.main.activity_main.viewPager
 
 /**
  *                             _ooOoo_
@@ -58,7 +59,8 @@ import kotlinx.android.synthetic.main.activity_main.viewPager
  */
 open class MainActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private val binding by viewBinding(ActivityMainBinding::inflate)
+
 
     var fragments = mutableListOf<Fragment>(
         ControlFragment(),
@@ -70,26 +72,20 @@ open class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
 
         initView()
         requestPermissionNotification()
         addListener()
-        checkWechatAccessibilityStatus()
+
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkWechatAccessibilityStatus()
-    }
 
     private fun initView() {
         val adapter = CBaseMyPagerAdapter(supportFragmentManager, fragments, titles)
         binding.viewPager.adapter = adapter
-        binding.slidingTabs.setupWithViewPager(viewPager)
-        viewPager.offscreenPageLimit = fragments.size
+        binding.slidingTabs.setupWithViewPager(binding.viewPager)
+        binding.viewPager.offscreenPageLimit = fragments.size
     }
 
     private fun addListener() {
@@ -103,10 +99,6 @@ open class MainActivity : BaseActivity() {
         }, "${packageName}/${WechatService::class.java.name}")
     }
 
-    private fun checkWechatAccessibilityStatus() {
-        val controlFragment = fragments[0] as ControlFragment
-        controlFragment.updateControlView(checkStatus())
-    }
 
     // 接收第二个 Activity 返回的结果
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

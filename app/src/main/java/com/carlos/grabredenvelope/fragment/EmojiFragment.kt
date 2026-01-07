@@ -1,16 +1,27 @@
 package com.carlos.grabredenvelope.fragment
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
-import kotlinx.android.synthetic.main.fragment_emoji.cb_emoji_control
-import kotlinx.android.synthetic.main.fragment_emoji.et_emoji
-import kotlinx.android.synthetic.main.fragment_emoji.np_interval
-import kotlinx.android.synthetic.main.fragment_emoji.np_times
+import com.carlos.grabredenvelope.databinding.FragmentEmojiBinding
+
 
 class EmojiFragment : BaseFragment(R.layout.fragment_emoji) {
+
+    private lateinit var binding: FragmentEmojiBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentEmojiBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -18,37 +29,37 @@ class EmojiFragment : BaseFragment(R.layout.fragment_emoji) {
     }
 
     private fun init() {
-        et_emoji.setText(RedEnvelopePreferences.autoText)
-        et_emoji.doAfterTextChanged {
-            RedEnvelopePreferences.autoText = et_emoji.text.toString()
+        binding.etEmoji.setText(RedEnvelopePreferences.autoText)
+        binding.etEmoji.doAfterTextChanged {
+            RedEnvelopePreferences.autoText = binding.etEmoji.text.toString()
         }
 
-        np_times.minValue = 0
-        np_times.maxValue = 100
-        np_times.value = RedEnvelopePreferences.emojiTimes
-        np_times.setOnValueChangedListener { picker, oldVal, newVal ->
+        binding.npTimes.minValue = 0
+        binding.npTimes.maxValue = 100
+        binding.npTimes.value = RedEnvelopePreferences.emojiTimes
+        binding.npTimes.setOnValueChangedListener { picker, oldVal, newVal ->
             RedEnvelopePreferences.emojiTimes = newVal
         }
 
-        np_interval.minValue = 0
-        np_interval.maxValue = 3000
-        np_interval.value = RedEnvelopePreferences.emojiInterval
-        np_interval.setOnValueChangedListener { picker, oldVal, newVal ->
+        binding.npInterval.minValue = 0
+        binding.npInterval.maxValue = 3000
+        binding.npInterval.value = RedEnvelopePreferences.emojiInterval
+        binding.npInterval.setOnValueChangedListener { picker, oldVal, newVal ->
             RedEnvelopePreferences.emojiInterval = newVal
         }
 
 
-        cb_emoji_control.setOnCheckedChangeListener { buttonView, isChecked ->
-            cb_emoji_control.isChecked = isChecked
-            RedEnvelopePreferences.emojiState = cb_emoji_control.isChecked
+        binding.cbEmojiControl.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.cbEmojiControl.isChecked = isChecked
+            RedEnvelopePreferences.emojiState = binding.cbEmojiControl.isChecked
             updateControlView()
         }
         updateControlView()
     }
 
     private fun updateControlView() {
-        if (RedEnvelopePreferences.emojiState) cb_emoji_control?.setButtonDrawable(R.mipmap.switch_on)
-        else cb_emoji_control?.setButtonDrawable(R.mipmap.switch_off)
+        if (RedEnvelopePreferences.emojiState) binding.cbEmojiControl?.setButtonDrawable(R.mipmap.switch_on)
+        else binding.cbEmojiControl?.setButtonDrawable(R.mipmap.switch_off)
     }
 
 }

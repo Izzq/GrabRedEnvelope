@@ -55,7 +55,7 @@ class WechatService : BaseAccessibilityService() {
 
     override fun onCreate() {
         super.onCreate()
-        WechatConstants.setVersion(AppUtils.getVersionName(WECHAT_PACKAGE))
+        WechatConstants.setVersion(AppUtils.getVersionName(WECHAT_PACKAGE) ?: "")
         loadEmojiConfig()
         canSendEmoji = true
     }

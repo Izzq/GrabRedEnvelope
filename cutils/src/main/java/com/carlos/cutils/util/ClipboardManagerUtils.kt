@@ -11,17 +11,6 @@ import com.carlos.cutils.CUtils
  */
 object ClipboardManagerUtils {
 
-    @JvmStatic
-    fun clipText(
-        context: Context = CUtils.cContext,
-        content: CharSequence,
-        label: CharSequence = "label"
-    ) {
-        val clipboardManager =
-            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = ClipData.newPlainText(label, content)
-        clipboardManager.primaryClip = clipData
-    }
 
     @JvmStatic
     fun getClipText(context: Context = CUtils.cContext): CharSequence {

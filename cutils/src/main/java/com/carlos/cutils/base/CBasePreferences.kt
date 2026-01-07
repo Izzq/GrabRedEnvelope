@@ -23,7 +23,7 @@ open class CBasePreferences(
     }
 
     open fun getString(key: String, defaultValue: String): String {
-        return getSharedPreferences(cContext).getString(key, defaultValue)
+        return getSharedPreferences(cContext).getString(key, defaultValue) ?: ""
     }
 
     open fun setInt(key: String, value: Int): Boolean {

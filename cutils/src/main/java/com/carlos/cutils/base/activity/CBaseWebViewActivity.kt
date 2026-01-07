@@ -25,7 +25,7 @@ open class CBaseWebViewActivity : CBaseActivity() {
         webSettings.setSupportZoom(true)//是否可以缩放，默认false
         webSettings.builtInZoomControls = false//是否显示缩放按钮，默认false
         webSettings.useWideViewPort = true//大视图模式
-        webSettings.setAppCacheEnabled(true)//是否使用缓存
+//        webSettings.setAppCacheEnabled(true)//是否使用缓存
         webSettings.domStorageEnabled = true
         webSettings.loadWithOverviewMode = true //是否自适应屏幕
     }
