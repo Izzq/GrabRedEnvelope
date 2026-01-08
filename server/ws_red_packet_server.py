@@ -82,30 +82,26 @@ async def send_heartbeat():
             continue
 
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f"🕒 当前时间: {current_time}")
-
+        print(f"🕒 当前时间: {current_time}")  # 打印当前时间
         for ws in list(CLIENTS):
             try:
+                # 检查客户端是否超时（假设超时为 60 秒）
                 last_heartbeat = LAST_HEARTBEAT.get(ws, 0)
-
-                # 超时判断（60 秒）
                 if time.time() - last_heartbeat > 60:
                     print(f"❌ 客户端 {ws.remote_address} 超时，关闭连接")
                     await ws.close()
                     CLIENTS.remove(ws)
-                    LAST_HEARTBEAT.pop(ws, None)
+                    del LAST_HEARTBEAT[ws]
                 else:
+                    # 向客户端发送心跳消息
                     await ws.send(json.dumps({"action": "heartbeat"}))
                     print(f"➡️ 发送心跳消息到 {ws.remote_address}")
-
             except websockets.ConnectionClosed as e:
                 print(f"❌ 发送心跳失败，连接已关闭: {e}")
                 CLIENTS.remove(ws)
-                LAST_HEARTBEAT.pop(ws, None)
-
+                del LAST_HEARTBEAT[ws]
             except Exception as e:
                 print(f"❌ 发送心跳失败: {e}")
-
         await asyncio.sleep(HEARTBEAT_INTERVAL)
 
 

@@ -30,7 +30,7 @@ class WsClient(private val service: MyAccessibilityService) {
                 "ws://10.0.2.2:8765"
             } else {
                 // TODO: 注意 真机，修改为局域网 PC IP
-                "ws://192.168.1.103:8765"
+                WebSocketConst.SERVER
             }
 
         val request = Request.Builder().url(serverUrl).build()
