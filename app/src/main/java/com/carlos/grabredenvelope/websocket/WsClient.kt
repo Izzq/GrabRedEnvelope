@@ -1,9 +1,13 @@
 package com.carlos.grabredenvelope.websocket
 
-import okhttp3.*
 import android.os.Build
 import com.carlos.grabredenvelope.services.test.MyAccessibilityService
 import com.carlos.grabredenvelope.utils.LogUtil
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import java.util.concurrent.TimeUnit
 
 class WsClient(private val service: MyAccessibilityService) {
@@ -15,7 +19,8 @@ class WsClient(private val service: MyAccessibilityService) {
     @Volatile
     private var isConnected = false
 
-    private val heartBeatInterval: Long = 5 // 心跳间隔，单位：秒
+//    private val heartBeatInterval: Long = 5 // 心跳间隔，单位：秒
+    private val heartBeatInterval: Long = 10 // 心跳间隔，单位：秒
 
     fun connect() {
         // 自动选择地址
@@ -60,6 +65,12 @@ class WsClient(private val service: MyAccessibilityService) {
                 isConnected = false
             }
         })
+    }
+
+    fun send(content: String) {
+        if (content.isNotEmpty()) {
+            ws?.send(content)
+        }
     }
 
     // 开始定时发送心跳消息

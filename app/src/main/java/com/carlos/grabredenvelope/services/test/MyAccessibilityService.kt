@@ -6,8 +6,9 @@ import android.graphics.Path
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.carlos.grabredenvelope.utils.LogUtil
+import com.carlos.grabredenvelope.websocket.GsonHelper
+import com.carlos.grabredenvelope.websocket.WebSend
 import com.carlos.grabredenvelope.websocket.WsClient
-
 import org.json.JSONObject
 
 class MyAccessibilityService : AccessibilityService() {
@@ -16,12 +17,16 @@ class MyAccessibilityService : AccessibilityService() {
         lateinit var instance: MyAccessibilityService
     }
 
+    //WebSocket Client
+    private var ws: WsClient? = null
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
         LogUtil.d("✅ WebSocket onServiceConnected")
         // 启动 WebSocket Client
-        WsClient(this).connect()
+        ws = WsClient(this)
+        ws?.connect()
     }
 
     //    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
@@ -48,18 +53,18 @@ class MyAccessibilityService : AccessibilityService() {
         val redPackets = node.findAccessibilityNodeInfosByText("微信红包")
         for (packet in redPackets) {
             if (packet.isClickable) {
-
-                notifyPC("红包aaaa")
+                notifyPC(GsonHelper.gson.toJson(WebSend(action = "command", info = "click point")))
             }
         }
     }
 
     private fun clickOpenButton(node: AccessibilityNodeInfo?) {
-
+        notifyPC(GsonHelper.gson.toJson(WebSend(action = "command", info = "click botton")))
     }
 
     private fun notifyPC(info: String) {
         LogUtil.d("➡️ 已通知 PC: $info")
+        ws?.send(info)
     }
 
 
