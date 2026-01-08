@@ -5,9 +5,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
@@ -18,6 +21,7 @@ import com.carlos.grabredenvelope.activity.PhonePointActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
 import com.carlos.grabredenvelope.databinding.FragmentControlBinding
+import com.carlos.grabredenvelope.websocket.WebSocketConst
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -197,6 +201,11 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
                 PhonePointActivity.SET_OPEN_LIST_RED_POINT_REQUEST_CODE
             )
         }
+
+
+        //设置IP
+        setupIpValidation(binding.etIp)
+
     }
 
 
@@ -228,6 +237,9 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
         binding.cbCustomListClick.isChecked = RedEnvelopePreferences.wechatControl.isCustomListClick
         binding.etListPointX.setText(RedEnvelopePreferences.wechatControl.listPointX.toString())
         binding.etListPointY.setText(RedEnvelopePreferences.wechatControl.listPointY.toString())
+
+
+        binding.etIp.setText(WebSocketConst.IP)
 
         val mainActivity = activity as MainActivity
         updateControlView(mainActivity.checkStatus())
@@ -310,4 +322,70 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
     }
+
+
+    //==============================================================================================
+
+
+    /**
+     *  validate IPv4 address
+     */
+    fun validateIPv4Address(ipAddress: String): Boolean {
+        val ipPattern = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+        return ipAddress.matches(Regex(ipPattern))
+    }
+
+    /**
+     * 设置websocket连接的IP
+     */
+    private fun setupIpValidation(editTextIp: EditText) {
+        editTextIp.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                charSequence: CharSequence?,
+                start: Int,
+                before: Int,
+                after: Int
+            ) {
+                // No action needed before the text changes
+            }
+
+            override fun onTextChanged(
+                charSequence: CharSequence?,
+                start: Int,
+                before: Int,
+                after: Int
+            ) {
+                // When the text is being changed, validate the IP
+                val ipAddress = charSequence.toString()
+                if (validateIPv4Address(ipAddress)) {
+                    // Valid IP address
+                    editTextIp.setBackgroundColor(android.graphics.Color.GREEN) // Optional: Change background color on valid input
+                } else {
+                    // Invalid IP address
+                    editTextIp.setBackgroundColor(android.graphics.Color.RED) // Optional: Change background color on invalid input
+                }
+            }
+
+            override fun afterTextChanged(editable: Editable?) {
+                // You can display Toast or any other feedback after text is changed
+                val ipAddress = editable.toString()
+                if (validateIPv4Address(ipAddress)) {
+                    Toast.makeText(editTextIp.context, "Valid IPv4 Address", Toast.LENGTH_SHORT)
+                        .show()
+                    WebSocketConst.setNewIP(ipAddress)
+                } else {
+                    Toast.makeText(editTextIp.context, "Invalid IPv4 Address", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        })
+    }
+
+
+    //==============================================================================================
+
+
 }

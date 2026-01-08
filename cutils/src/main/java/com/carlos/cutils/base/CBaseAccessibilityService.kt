@@ -2,6 +2,8 @@ package com.carlos.cutils.base
 
 import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
+import com.carlos.cutils.util.AppUtils.WECHAT_PACKAGE
+import com.carlos.cutils.util.LogUtils
 
 /**
  * {@link CBaseAccessibilityService}
@@ -9,7 +11,7 @@ import android.view.accessibility.AccessibilityEvent
  */
 abstract class CBaseAccessibilityService : AccessibilityService() {
 
-    open var monitorPackageName: String = ""
+    open var monitorPackageName: String = WECHAT_PACKAGE
     var currentClassName: String = ""
     var isMonitor: Boolean = true
     var isMonitorNotification = true
@@ -17,6 +19,9 @@ abstract class CBaseAccessibilityService : AccessibilityService() {
     var isMonitorContent = true
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
+
+        LogUtils.d("onAccessibilityEvent:$event")
+
         if (isMonitor.not()) {
             return
         }
@@ -26,6 +31,9 @@ abstract class CBaseAccessibilityService : AccessibilityService() {
         if (monitorPackageName.isNotEmpty() and (monitorPackageName != event.packageName)) {
             return
         }
+
+        LogUtils.d("onAccessibilityEvent2:$event")
+
         if (event.className.isNullOrEmpty()) {
             return
         }

@@ -3,15 +3,17 @@ package com.carlos.grabredenvelope.services.test
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.graphics.Path
+import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import com.carlos.grabredenvelope.utils.LogUtil
+import com.blankj.utilcode.util.LogUtils
+import com.carlos.grabredenvelope.websocket.ICommandService
 import com.carlos.grabredenvelope.websocket.GsonHelper
 import com.carlos.grabredenvelope.websocket.WebSend
 import com.carlos.grabredenvelope.websocket.WsClient
 import org.json.JSONObject
 
-class MyAccessibilityService : AccessibilityService() {
+class MyAccessibilityService : AccessibilityService(), ICommandService {
 
     companion object {
         lateinit var instance: MyAccessibilityService
@@ -23,7 +25,7 @@ class MyAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
-        LogUtil.d("✅ WebSocket onServiceConnected")
+        LogUtils.d("✅ WebSocket onServiceConnected")
         // 启动 WebSocket Client
         ws = WsClient(this)
         ws?.connect()
@@ -53,18 +55,54 @@ class MyAccessibilityService : AccessibilityService() {
         val redPackets = node.findAccessibilityNodeInfosByText("微信红包")
         for (packet in redPackets) {
             if (packet.isClickable) {
-                notifyPC(GsonHelper.gson.toJson(WebSend(action = "command", info = "click point")))
+
+                // 获取控件的边界
+                val bounds = Rect()
+                node.getBoundsInScreen(bounds)
+
+                // 获取控件的左上角坐标 (x, y) 和右下角坐标 (x2, y2)
+                val x1 = bounds.left // 控件左上角 X 坐标
+                val y1 = bounds.top // 控件左上角 Y 坐标
+                val x2 = bounds.right // 控件右下角 X 坐标
+                val y2 = bounds.bottom // 控件右下角 Y 坐标
+
+                val xy = "(x1=$x1,y1=$y1),(x2=$x2,y2=$y2)"
+
+                sendWsMessage(
+                    GsonHelper.gson.toJson(
+                        WebSend(
+                            action = "command",
+                            info = "click point"
+                        )
+                    )
+                )
             }
         }
     }
 
     private fun clickOpenButton(node: AccessibilityNodeInfo?) {
-        notifyPC(GsonHelper.gson.toJson(WebSend(action = "command", info = "click botton")))
+        if (node == null) return
+
+        // 获取控件的边界
+        val bounds = Rect()
+        node.getBoundsInScreen(bounds)
+
+        // 获取控件的左上角坐标 (x, y) 和右下角坐标 (x2, y2)
+        val x1 = bounds.left // 控件左上角 X 坐标
+        val y1 = bounds.top // 控件左上角 Y 坐标
+        val x2 = bounds.right // 控件右下角 X 坐标
+        val y2 = bounds.bottom // 控件右下角 Y 坐标
+
+        val xy = "(x1=$x1,y1=$y1),(x2=$x2,y2=$y2)"
+
+        LogUtils.d("clickOpenButton: $xy")
+
+        sendWsMessage(GsonHelper.gson.toJson(WebSend(action = "command", info = xy)))
     }
 
-    private fun notifyPC(info: String) {
-        LogUtil.d("➡️ 已通知 PC: $info")
-        ws?.send(info)
+    override fun sendWsMessage(jsonStr: String) {
+        LogUtils.d("➡️ 已通知 PC: $jsonStr")
+        ws?.send(jsonStr)
     }
 
 
@@ -74,17 +112,17 @@ class MyAccessibilityService : AccessibilityService() {
         nodes.forEach {
             if (it.isClickable) {
                 it.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                LogUtil.d("✅ 点击文本: $text")
+                LogUtils.d("✅ 点击文本: $text")
                 return true
             }
         }
-        LogUtil.w("未找到文本节点: $text")
+        LogUtils.w("未找到文本节点: $text")
         return false
     }
 
     fun back() {
         performGlobalAction(GLOBAL_ACTION_BACK)
-        LogUtil.d("✅ 返回操作")
+        LogUtils.d("✅ 返回操作")
     }
 
     fun swipe(x1: Int, y1: Int, x2: Int, y2: Int) {
@@ -93,11 +131,11 @@ class MyAccessibilityService : AccessibilityService() {
         val gesture = GestureDescription.Builder()
             .addStroke(GestureDescription.StrokeDescription(path, 0, 200)).build()
         dispatchGesture(gesture, null, null)
-        LogUtil.d("✅ 滑动操作: ($x1,$y1) -> ($x2,$y2)")
+        LogUtils.d("✅ 滑动操作: ($x1,$y1) -> ($x2,$y2)")
     }
 
-    fun handleCommand(jsonStr: String) {
-        LogUtil.json(jsonStr)
+    override fun handleWsCommand(jsonStr: String) {
+        LogUtils.json(jsonStr)
         val obj = JSONObject(jsonStr)
         when (obj.getString("action")) {
             "tap_text" -> clickByText(obj.getString("text"))

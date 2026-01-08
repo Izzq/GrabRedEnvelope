@@ -1,5 +1,15 @@
 package com.carlos.grabredenvelope.websocket
 
 object WebSocketConst {
-    const val SERVER = "ws://192.168.1.104:8765"
+
+    fun getWsServer(): String {
+        return "ws://$IP:8765"
+    }
+
+    var IP = "192.168.1.104"
+
+    fun setNewIP(ip: String) {
+        IP = ip
+    }
+
 }

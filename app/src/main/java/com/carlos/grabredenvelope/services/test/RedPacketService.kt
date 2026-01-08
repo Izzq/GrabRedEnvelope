@@ -4,7 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import com.carlos.grabredenvelope.utils.LogUtil
+import com.blankj.utilcode.util.LogUtils
 import com.carlos.grabredenvelope.websocket.WebSocketConst
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -23,18 +23,18 @@ class RedPacketService : AccessibilityService() {
 
     private fun connectWebSocket() {
         val client = OkHttpClient()
-        val request = Request.Builder().url(WebSocketConst.SERVER).build()
+        val request = Request.Builder().url(WebSocketConst.getWsServer()).build()
         ws = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                LogUtil.d("✅ WebSocket 已连接")
+                LogUtils.d("✅ WebSocket 已连接")
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                LogUtil.d("⬅️ 收到 PC 消息: $text")
+                LogUtils.d("⬅️ 收到 PC 消息: $text")
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                LogUtil.d("❌ WebSocket 连接失败: ${t.message}")
+                LogUtils.d("❌ WebSocket 连接失败: ${t.message}")
             }
         })
     }
@@ -86,7 +86,7 @@ class RedPacketService : AccessibilityService() {
 
     private fun notifyPC(info: String) {
         ws?.send("""{"action":"red_packet","info":"$info"}""")
-        LogUtil.d("➡️ 已通知 PC: $info")
+        LogUtils.d("➡️ 已通知 PC: $info")
     }
 
     override fun onInterrupt() {}

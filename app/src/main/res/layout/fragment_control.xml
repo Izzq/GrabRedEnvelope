@@ -184,6 +184,13 @@
                     android:max="100" />
             </LinearLayout>
 
+            <EditText
+                android:id="@+id/et_ip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="IP设置"
+                android:textColorHint="#898686" />
+
             <LinearLayout
                 android:id="@+id/ll_custom_click"
                 android:layout_width="match_parent"
@@ -257,6 +264,7 @@
                     android:text="获取" />
 
             </LinearLayout>
+
 
             <TextView
                 android:layout_width="match_parent"
