@@ -258,14 +258,29 @@ class WechatService : BaseAccessibilityService(), ICommandService {
                 }
             )
         ) {
+
             // TODO: adb 点击 聊天页面《红包框》
-            val randomX = (400..600).random()
-            var randomY = (1990..2010).random()
+
+            // TODO: 坐标需要设备兼容（当前按 1加11 标准）
+            var randomX = (400..600).random()
+            var randomY = (1945..2060).random()
+
+            //有领取区间Y：[1850, 2060]
+            //无领取区间Y：[1945, 2150]
+            //交集部分Y：[1945, 2060]
+
             //使用自定义Y坐标
             if (RedEnvelopePreferences.wechatControl.isCustomListClick) {
+                val pointX = RedEnvelopePreferences.wechatControl.listPointX.toInt()
                 val pointY = RedEnvelopePreferences.wechatControl.listPointY.toInt()
                 if (pointY > 0) {
+                    randomX = (pointX - 20..pointX + 20).random()
                     randomY = (pointY - 10..pointY + 10).random()
+                    //判断是否在最大值和最少值之间，如果不是则随机一个安全范围值
+                    if (randomY !in 1850..2150) {
+                        randomY = (1945..2060).random()
+                    }
+                    LogUtils.d("[envelope] click received custom x=$randomX,y=$randomY")
                 }
             }
             sendWsClickCommand(randomX, randomY)
@@ -317,13 +332,18 @@ class WechatService : BaseAccessibilityService(), ICommandService {
             clickFirstNodeInfo(envelopes, true)
 
             // TODO: adb 点击红包弹窗按钮
-            val randomX = (440..630).random()
+            // TODO: 坐标需要设备兼容（当前按 1加11 标准）
+            var randomX = (440..630).random()
             var randomY = (1470..1600).random()
+
             //使用自定义Y坐标
             if (RedEnvelopePreferences.wechatControl.isCustomClick) {
+                val pointX = RedEnvelopePreferences.wechatControl.listPointX.toInt()
                 val pointY = RedEnvelopePreferences.wechatControl.listPointY.toInt()
                 if (pointY > 0) {
-                    randomY = (pointY - 60..pointY + 60).random()
+                    randomX = (pointX - 10..pointX + 10).random()
+                    randomY = (pointY - 10..pointY + 10).random()
+                    LogUtils.d("[envelope] click opened custom x=$randomX,y=$randomY")
                 }
             }
             sendWsClickCommand(randomX, randomY)
