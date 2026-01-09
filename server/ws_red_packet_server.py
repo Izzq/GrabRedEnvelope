@@ -3,6 +3,7 @@
 
 import asyncio
 import websockets
+import socket
 import json
 import subprocess
 import shutil
@@ -22,7 +23,8 @@ if not ADB_PATH:
     print("❌ adb 未找到，请确认已安装 Android SDK 并加入 PATH")
     sys.exit(1)
 
-
+# 执行adb命令
+# @param cmd 如 shell input tap x y
 def adb(cmd: str) -> str:
     """
     执行 adb 命令
@@ -42,7 +44,20 @@ def adb(cmd: str) -> str:
 
     return result.stdout.strip()
 
+# 获取本地IP
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        s.close()
+    return ip
 
+
+# 接收消息
 async def handler(ws):
     CLIENTS.add(ws)
     addr = ws.remote_address
@@ -72,6 +87,7 @@ async def handler(ws):
         CLIENTS.remove(ws)
         del LAST_HEARTBEAT[ws]
         print(f"❌ Android 断开: {addr}")
+
 
 # 定时广播心跳消息给所有客户端
 async def send_heartbeat():
@@ -185,7 +201,7 @@ async def console_input():
             print(f"❌ 执行失败: {e}")
 
 
-
+# 导出设备UI布局（不是很好用）
 def click_text_from_xml(target_text: str):
     tree = ET.parse("ui.xml")
     root = tree.getroot()
@@ -211,8 +227,13 @@ def click_text_from_xml(target_text: str):
 # 启动 WebSocket 服务器并定时发送心跳
 async def main():
     try:
-        async with websockets.serve(handler, "0.0.0.0", 8765):
-            print("✅ WebSocket Server 已启动: ws://0.0.0.0:8765")
+        local_ip = get_local_ip()
+        port = 8765
+        async with websockets.serve(handler, "0.0.0.0", port):
+            print("✅ WebSocket Server 已启动")
+            print(f"🌐 本机访问地址: ws://127.0.0.1:{port}")
+            print(f"📡 局域网访问地址: ws://{local_ip}:{port}")
+
             # 启动心跳任务
             asyncio.create_task(send_heartbeat())
             await console_input()  # 主线程阻塞
