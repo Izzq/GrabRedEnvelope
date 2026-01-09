@@ -92,7 +92,6 @@ object AccessibilityServiceUtils {
 
                 Log.d("RedEnvelopeLog", "內容 Control bounds: ($x1, $y1) to ($x2, $y2)")
             } else {
-
                 val node = accessibilityNodeInfo.parent ?: accessibilityNodeInfo
 
                 // 获取控件的边界

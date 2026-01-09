@@ -40,7 +40,10 @@ import java.io.IOException
 
 class WechatService : BaseAccessibilityService(), ICommandService {
 
+    //监听的应用包名
     override var monitorPackageName = WECHAT_PACKAGE
+
+    //监听通知文案
     override var notificationTitle = RED_ENVELOPE_TITLE
 
     private var emojitext = ""
@@ -66,32 +69,82 @@ class WechatService : BaseAccessibilityService(), ICommandService {
         WechatConstants.setVersion(AppUtils.getVersionName(WECHAT_PACKAGE) ?: "")
         loadEmojiConfig()
         canSendEmoji = true
-
-        LogUtils.d("✅ WebSocket onServiceConnected")
-        // 启动 WebSocket Client
-        ws = WsClient(this)
-        ws?.connect()
+        initWs()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        ws?.close()
+        closeWs()
     }
 
     //=======================================================================
+    // WebSocket
+    //=======================================================================
 
-
-    override fun handleWsCommand(jsonStr: String) {
+    /**
+     * 初始化ws
+     */
+    private fun initWs() {
+        LogUtils.d("[ws] ✅ WebSocket onServiceConnected")
+        // 启动 WebSocket Client
+        ws = WsClient(this)
+        ws?.connect()
 
     }
 
+    /**
+     * 关闭ws
+     */
+    private fun closeWs() {
+        ws?.close()
+    }
 
+
+    /**
+     * 处理服务端命令
+     */
+    override fun handleWsCommand(jsonStr: String) {
+    }
+
+    /**
+     * 发送ws消息给服务端
+     */
     override fun sendWsMessage(jsonStr: String) {
-        LogUtils.d("➡️ 已通知 PC: $jsonStr")
+        LogUtils.d("[ws] ➡️ 已通知 PC: $jsonStr")
         ws?.send(jsonStr)
     }
 
+    /**
+     * 发送点击命令
+     */
+    private fun sendWsClickCommand(x: Int, y: Int) {
+        sendWsMessage(
+            GsonHelper.gson.toJson(
+                WebSend(
+                    action = "command",
+                    info = "shell input tap $x $y"
+                )
+            )
+        )
+    }
 
+    /**
+     * 发送返回键命令
+     */
+    private fun sendWsBackCommand() {
+        sendWsMessage(
+            GsonHelper.gson.toJson(
+                WebSend(
+                    action = "command",
+                    info = "shell input keyevent 4"
+                )
+            )
+        )
+    }
+
+
+    //=======================================================================
+    // 无障碍事件监听
     //=======================================================================
 
 
@@ -102,11 +155,14 @@ class WechatService : BaseAccessibilityService(), ICommandService {
         super.onAccessibilityEvent(event)
         if (AccessibilityEvent.TYPE_VIEW_CLICKED == event.eventType) {
             LogUtils.d("monitorViewClicked:$event")
-            if ((status != HAS_CLICKED)) return
-            openRedEnvelope(event)
+            if ((status != HAS_CLICKED)) {
+                //监视《红包弹窗》，并点击领取按钮
+                openRedEnvelope(event)
+            }
         }
     }
 
+    /** 监听通知变化 */
     override fun monitorNotificationChanged(event: AccessibilityEvent) {
         LogUtils.d("monitorNotificationChanged:$event")
         if (RedEnvelopePreferences.wechatControl.isMonitorNotification.not()) {
@@ -115,34 +171,53 @@ class WechatService : BaseAccessibilityService(), ICommandService {
         if (status == HAS_RECEIVED) {
             return
         }
-
         super.monitorNotificationChanged(event)
     }
 
+    /** 监听窗口变化 */
     override fun monitorWindowChanged(event: AccessibilityEvent) {
         LogUtils.d("monitorWindowChanged:$event")
 
         if (WechatFilter.isRemarkFilter(rootInActiveWindow)) return
 
+        //监视《红包弹窗》，并点击领取按钮
         openRedEnvelope(event)
-        quitEnvelope(event)
+
+        //退出《红包详情页》
+        quitEnvelope(event, isCheckPage = true)
     }
 
+    /** 监听内容变化 */
     override fun monitorContentChanged(event: AccessibilityEvent) {
         LogUtils.d("monitorContentChanged:$event")
 
         if (WechatFilter.isRemarkFilter(rootInActiveWindow)) return
 
         GlobalScope.launch {
-            delay(300L)
+            val randomTime = (200L..300L).random()
+            delay(randomTime)
+            //监视 聊天页面《红包框》
             grabRedEnvelope()
         }
+
+        //监视《微信聊天列表》
         monitorChat()
     }
 
 
+    //=======================================================================
+    // 操作点击
+    //=======================================================================
+
+
+    //上一次点击聊天页面《红包框》时间戳
+    private var lastGrabRedEnvelopTimestamp = 0L
+
+
     /**
-     * 监控微信聊天列表页面是否有红包，经测试若聊天页面与通知同时开启聊天页面比通知先监听到，聊天列表已点击的情况下就不用去点击通知栏
+     * 监视《微信聊天列表》页面是否有红包
+     *
+     * 注意：经测试若聊天页面与通知同时开启聊天页面比通知先监听到，聊天列表已点击的情况下就不用去点击通知栏
      */
     private fun monitorChat() {
         // 监控关闭则不执行后续操作
@@ -154,148 +229,110 @@ class WechatService : BaseAccessibilityService(), ICommandService {
             )
         ) {
             status = HAS_RECEIVED
-            LogUtils.d("received a redenvelope.")
+            LogUtils.d("[envelope] received a red envelope.")
         }
     }
 
     /**
-     * 对话页面监控点击红包, 从最下面开始点起
+     * 监视 聊天页面《红包框》, 从最下面开始点起
      */
     private fun grabRedEnvelope() {
-        /* 发现红包点击进入领取红包页面 */
-        if (RedEnvelopePreferences.wechatControl.isCustomListClick) {
-            LogUtils.d("grabRedEnvelopeCustom")
-            grabRedEnvelopeCustom()
-        } else {
-            LogUtils.d("grabRedEnvelopeAuto")
+        LogUtils.d("grabRedEnvelopeAuto")
+        if (System.currentTimeMillis() - lastGrabRedEnvelopTimestamp > 500) {
+            lastGrabRedEnvelopTimestamp = System.currentTimeMillis()
             grabRedEnvelopeAuto()
         }
     }
 
     /**
-     * 对话页面监控点击红包, 从最下面开始点起
+     * 监视 聊天页面《红包框》，通过无障碍API识别
      */
     private fun grabRedEnvelopeAuto() {
-        /* 发现红包点击进入领取红包页面 */
-        val ifGrabSelf = RedEnvelopePreferences.wechatControl.ifGrabSelf
         if (findAndClickFirstNodeInfoByViewId(
                 viewId = RED_ENVELOPE_ID,
                 childExistId = RED_ENVELOPE_FLAG_ID,
                 childNotExistIds = RED_ENVELOPE_BEEN_GRAB_ID,
-                isJustClickLeft = !ifGrabSelf,
+                isJustClickLeft = !RedEnvelopePreferences.wechatControl.ifGrabSelf,
                 isReverse = true,
                 callback = {
-
                 }
             )
         ) {
-
-            // TODO: adb 点击聊天红包框
+            // TODO: adb 点击 聊天页面《红包框》
             val randomX = (400..600).random()
-            val randomY = (1880..2000).random()
-            sendWsMessage(
-                GsonHelper.gson.toJson(
-                    WebSend(
-                        action = "command",
-                        info = "shell input tap $randomX $randomY"
-                    )
-                )
-            )
-
+            var randomY = (1990..2010).random()
+            //使用自定义Y坐标
+            if (RedEnvelopePreferences.wechatControl.isCustomListClick) {
+                val pointY = RedEnvelopePreferences.wechatControl.listPointY.toInt()
+                if (pointY > 0) {
+                    randomY = (pointY - 10..pointY + 10).random()
+                }
+            }
+            sendWsClickCommand(randomX, randomY)
             status = HAS_CLICKED
-            LogUtils.d("received a redenvelope and click.")
+            LogUtils.d("[envelope] received a red envelope and click.")
         }
     }
 
-    /**
-     * 对话页面监控点击红包, 从最下面开始点起
-     */
-    private fun grabRedEnvelopeCustom() {
-        val delayTime = 200L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
-        val pointX = RedEnvelopePreferences.wechatControl.listPointX.toFloat()
-        val pointY = RedEnvelopePreferences.wechatControl.listPointY.toFloat()
-
-        LogUtils.d("received delay custom open time:$delayTime")
-        executeAdbCommandClick(pointX, pointY, delayTime)
-
-        status = HAS_CLICKED
-        LogUtils.d("received a redenvelope and click.")
-    }
 
     /**
-     * 拆开红包
+     * 监视《红包弹窗》，并点击领取按钮
      */
     private fun openRedEnvelope(event: AccessibilityEvent) {
         // 进入红包页面点击开按钮
-        if (RedEnvelopePreferences.wechatControl.isCustomClick) {
-            LogUtils.d("openRedEnvelopeCustom:" + event.className)
-            openRedEnvelopeCustom(event)
-        } else {
-            LogUtils.d("openRedEnvelopeAuto:" + event.className)
-            openRedEnvelopeAuto(event)
-        }
+        LogUtils.d("openRedEnvelopeAuto:" + event.className)
+        openRedEnvelopeAuto(event)
     }
 
     /**
-     * 自动点击开按钮，高版本系统微信加载有过程查找开按钮不会马上找到，加入延迟防止不自动点击开按钮
+     * 监视《红包弹窗》，并点击领取按钮
+     *
+     * 注意：高版本系统微信加载有过程查找开按钮不会马上找到，加入延迟防止不自动点击开按钮
      */
     private fun openRedEnvelopeAuto(event: AccessibilityEvent) {
+
         // 如果当前不在聊天不是微信红包弹框或者已经没执行点击红包操作，则不执行拆的操作
         if ((!isRedEnvelopeDialog(event.className)) or (status != HAS_CLICKED)) {
             return
         }
 
         GlobalScope.launch {
-            LogUtils.d("start find open id")
+
+            LogUtils.d("[envelope] start find open id")
             val envelopes = getNodeInfosByViewId(RED_ENVELOPE_OPEN_ID, 300, 5)
-            LogUtils.d("end find open id")
+            LogUtils.d("[envelope] end find open id")
+
             if (envelopes.isNullOrEmpty()) {
-                // 没有开按钮，则点击退出按钮
+                // 没有开按钮，则点击退出按钮，触发无障碍点击节点
                 findAndClickFirstNodeInfoByViewId(RED_ENVELOPE_CLOSE_ID, true)
-                LogUtils.d("not has open button:$envelopes")
+                LogUtils.d("[envelope] not has open button:$envelopes")
                 return@launch
             }
 
-            val delayTime =
-                500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
+            val delayTime = 500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
             LogUtils.d("delay open time:$delayTime")
             delay(delayTime)
+
+            //触发无障碍点击节点
             clickFirstNodeInfo(envelopes, true)
 
             // TODO: adb 点击红包弹窗按钮
             val randomX = (440..630).random()
-            val randomY = (1470..1600).random()
-            sendWsMessage(
-                GsonHelper.gson.toJson(
-                    WebSend(
-                        action = "command",
-                        info = "shell input tap $randomX $randomY"
-                    )
-                )
-            )
+            var randomY = (1470..1600).random()
+            //使用自定义Y坐标
+            if (RedEnvelopePreferences.wechatControl.isCustomClick) {
+                val pointY = RedEnvelopePreferences.wechatControl.listPointY.toInt()
+                if (pointY > 0) {
+                    randomY = (pointY - 60..pointY + 60).random()
+                }
+            }
+            sendWsClickCommand(randomX, randomY)
 
             status = HAS_OPENED
-            LogUtils.d("opened a redenvelope")
+            LogUtils.d("[envelope] opened a red envelope")
 
-
-            val delayTimeClose = (1000L * RedEnvelopePreferences.wechatControl.delayCloseTime / 10)
-            LogUtils.d("delay close time:$delayTimeClose")
-            if (delayTimeClose != 101000L) {
-                val backDelayTime = delayTimeClose + 3000//添加延迟，当做打开页面时长
-                delay(backDelayTime)
-                //back()
-                // TODO: adb 点击返回键
-                sendWsMessage(
-                    GsonHelper.gson.toJson(
-                        WebSend(
-                            action = "command",
-                            info = "shell input keyevent 4"
-                        )
-                    )
-                )
-                LogUtils.d("quit redenvelope detail page.")
-            }
-            status = WAIT_NEW
+            //退出《红包详情页》
+            quitEnvelope(event, isCheckPage = false)
         }
     }
 
@@ -312,56 +349,58 @@ class WechatService : BaseAccessibilityService(), ICommandService {
         val pointX = RedEnvelopePreferences.wechatControl.pointX.toFloat()
         val pointY = RedEnvelopePreferences.wechatControl.pointY.toFloat()
 
-//        val path = Path()
-//        path.moveTo(pointX, pointY)
-//        LogUtils.d("delay custom open time:$delayTime")
-//        gesturePath(path, delayTime, interval = 500, times = 3)
-
         LogUtils.d("delay custom open time:$delayTime")
         executeAdbCommandClick(pointX, pointY, delayTime)
 
         status = HAS_OPENED
-        LogUtils.d("opened a redenvelope")
+        LogUtils.d("[envelope] opened a red envelope")
     }
 
     /**
-     * 退出红包详情页
+     * 退出《红包详情页》
+     *
+     * @param isCheckPage 是否监测页面信息
      */
-    private fun quitEnvelope(event: AccessibilityEvent) {
-        // 如果当前页面不是红包详情页或者没有点开过拆按钮，则不执行退出操作
-        if ((!isRedEnvelopeDetail(event.className)) or (status != HAS_OPENED)) {
+    private fun quitEnvelope(event: AccessibilityEvent, isCheckPage: Boolean) {
+        //没有点开过拆按钮，则不执行退出操作
+        if ((status != HAS_OPENED)) {
+            return
+        }
+        //如果当前页面不是红包详情页，则不执行退出操作
+        if (isCheckPage && (!isRedEnvelopeDetail(event.className))) {
             return
         }
 
         GlobalScope.launch {
+            //保存领取信息
             saveData()
-            val delayTime = (1000L * RedEnvelopePreferences.wechatControl.delayCloseTime / 10)
+
+            val randomTime = (1500L..3000L).random()
+            val delayTime = (randomTime * RedEnvelopePreferences.wechatControl.delayCloseTime / 10)
+
             LogUtils.d("delay close time:$delayTime")
+
             if (delayTime != 101000L) {
                 delay(delayTime)
-//                back()
+                //触发无障碍返回
+                //back()
                 // TODO: adb 点击返回键
-                sendWsMessage(
-                    GsonHelper.gson.toJson(
-                        WebSend(
-                            action = "command",
-                            info = "shell input keyevent 4"
-                        )
-                    )
-                )
+                sendWsBackCommand()
             }
 
+            status = WAIT_NEW
+            LogUtils.d("[envelope] quit red envelope detail page.")
+
+            //判断是否发送表情或消息
             if (canSendEmoji) {
                 val emojiState = RedEnvelopePreferences.emojiState
                 if (emojiState) {
                     delay(1000L)
                     loadEmojiConfig()
-                    sendMessage()
+                    sendEmojiMessage()
                 }
             }
         }
-        status = WAIT_NEW
-        LogUtils.d("quit redenvelope detail page.")
     }
 
     /**
@@ -391,8 +430,29 @@ class WechatService : BaseAccessibilityService(), ICommandService {
         }
     }
 
+    /**
+     * 通过adb命令点击
+     */
+    private fun executeAdbCommandClick(x: Float, y: Float, delayTime: Long) {
+        GlobalScope.launch {
+            delay(delayTime)
+            try {
+//                val command = "adb shell input tap $x $y"
+//                val command = "adb shell input tap ${x.toInt()} ${y.toInt()}"
+                val command = "input tap ${x.toInt()} ${y.toInt()}"
 
-    //--表情 ------------------------------------------------------------------------------------
+                val result = ShellUtils.execCmd(command, false, true)
+                LogUtils.d("result:$result")
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    //=======================================================================
+    // 表情
+    //=======================================================================
 
 
     private fun loadEmojiConfig() {
@@ -409,7 +469,7 @@ class WechatService : BaseAccessibilityService(), ICommandService {
     /**
      * 找到文本框输入表情，找到发送按钮点击循环执行
      */
-    private fun sendMessage() {
+    private fun sendEmojiMessage() {
         if (emojiCount >= emojiTimes && emojiTimes != 0) {
             emojiCount = 0
             canSendEmoji = true
@@ -418,6 +478,7 @@ class WechatService : BaseAccessibilityService(), ICommandService {
         if (emojitext.isEmpty()) {
             return
         }
+
         LogUtils.d("count:$emojiCount")
 
         val accessibilityNodeInfo = getNodeInfosByViewId(WechatConstants.CHAT_EDITTEXT_ID) ?: return
@@ -439,28 +500,8 @@ class WechatService : BaseAccessibilityService(), ICommandService {
                 emojiCount++
                 GlobalScope.launch {
                     delay(emojiInterval.toLong())
-                    sendMessage()
+                    sendEmojiMessage()
                 }
-            }
-        }
-    }
-
-
-    /**
-     * 通过adb命令点击
-     */
-    private fun executeAdbCommandClick(x: Float, y: Float, delayTime: Long) {
-        GlobalScope.launch {
-            delay(delayTime)
-            try {
-//                val command = "adb shell input tap $x $y"
-//                val command = "adb shell input tap ${x.toInt()} ${y.toInt()}"
-                val command = "input tap ${x.toInt()} ${y.toInt()}"
-
-                val result = ShellUtils.execCmd(command, false, true)
-                LogUtils.d("result:$result")
-            } catch (e: IOException) {
-                e.printStackTrace()
             }
         }
     }

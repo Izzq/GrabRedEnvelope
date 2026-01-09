@@ -31,13 +31,13 @@ class WsClient(private val service: ICommandService) {
                 WebSocketConst.getWsServer()
             }
 
-        LogUtils.d("✅ WebSocket 开始连接 $serverUrl")
+        LogUtils.d("[ws] ✅ WebSocket 开始连接 $serverUrl")
 
         val request = Request.Builder().url(serverUrl).build()
 
         ws = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                LogUtils.d("✅ WebSocket 已连接")
+                LogUtils.d("[ws] ✅ WebSocket 已连接")
                 isConnected = true
                 startHeartBeat()  // 开始发送心跳
             }
@@ -45,15 +45,15 @@ class WsClient(private val service: ICommandService) {
             override fun onMessage(webSocket: WebSocket, text: String) {
                 // 如果是心跳响应，也可以处理
                 if (text.contains("heartbeat")) {
-                    LogUtils.d("💓 收到服务器心跳消息")
+                    LogUtils.d("[ws] 💓 收到服务器心跳消息")
                 } else {
-                    LogUtils.d("⬅️ 收到消息: $text")
+                    LogUtils.d("[ws] ⬅️ 收到消息: $text")
                     service.handleWsCommand(text)
                 }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                LogUtils.e("❌ WebSocket 连接失败 ${t.message}")
+                LogUtils.e("[ws] ❌ WebSocket 连接失败 ${t.message}")
                 isConnected = false
                 Thread.sleep(2000)
                 connect() // 自动重连
@@ -61,7 +61,7 @@ class WsClient(private val service: ICommandService) {
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                 super.onClosed(webSocket, code, reason)
-                LogUtils.e("❌ WebSocket 连接 Closed , reason=${reason}")
+                LogUtils.e("[ws] ❌ WebSocket 连接 Closed , reason=${reason}")
                 isConnected = false
             }
         })
@@ -80,10 +80,10 @@ class WsClient(private val service: ICommandService) {
                 try {
                     // 发送心跳消息
                     ws?.send(GsonHelper.gson.toJson(WebSend(action = "heartbeat", info = "")))
-                    LogUtils.d("➡️ 发送心跳")
+                    LogUtils.d("[ws] ➡️ 发送心跳")
                     Thread.sleep(TimeUnit.SECONDS.toMillis(heartBeatInterval)) // 每隔 heartBeatInterval 秒发送一次心跳
                 } catch (e: InterruptedException) {
-                    LogUtils.e("❌ 心跳发送失败: ${e.message}")
+                    LogUtils.e("[ws] ❌ 心跳发送失败: ${e.message}")
                 }
             }
         }

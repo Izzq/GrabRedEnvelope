@@ -19,20 +19,18 @@ abstract class CBaseAccessibilityService : AccessibilityService() {
     var isMonitorContent = true
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-
-        LogUtils.d("onAccessibilityEvent:$event")
-
         if (isMonitor.not()) {
             return
         }
         if (rootInActiveWindow == null) {
             return
         }
+
+        LogUtils.d("onAccessibilityEvent:$event")
+
         if (monitorPackageName.isNotEmpty() and (monitorPackageName != event.packageName)) {
             return
         }
-
-        LogUtils.d("onAccessibilityEvent2:$event")
 
         if (event.className.isNullOrEmpty()) {
             return

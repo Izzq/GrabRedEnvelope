@@ -6,7 +6,7 @@ object WebSocketConst {
         return "ws://$IP:8765"
     }
 
-    var IP = "192.168.191.97"
+    var IP = "192.168.1.102"
 
     fun setNewIP(ip: String) {
         IP = ip
