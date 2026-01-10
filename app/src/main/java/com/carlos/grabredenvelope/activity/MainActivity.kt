@@ -33,7 +33,7 @@ open class MainActivity : BaseActivity() {
 
     var fragments = mutableListOf<Fragment>(
         ControlFragment(),
-        AboutFragment(),
+//        AboutFragment(),
         RecordFragment(),
         EmojiFragment()
     )
@@ -48,7 +48,7 @@ open class MainActivity : BaseActivity() {
 
     private fun initView() {
         titles.add(getString(R.string.main_tab_control))
-        titles.add(getString(R.string.main_tab_tutorials))
+//        titles.add(getString(R.string.main_tab_tutorials))
         titles.add(getString(R.string.main_tab_history))
         titles.add(getString(R.string.main_tab_expression))
 

@@ -338,8 +338,6 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
                 // You can display Toast or any other feedback after text is changed
                 val ipAddress = editable.toString()
                 if (validateIPv4Address(ipAddress)) {
-                    Toast.makeText(editTextIp.context, "Valid IPv4 Address", Toast.LENGTH_SHORT)
-                        .show()
                     WebSocketConst.setNewIP(ipAddress)
                 } else {
                     Toast.makeText(editTextIp.context, "Invalid IPv4 Address", Toast.LENGTH_SHORT)

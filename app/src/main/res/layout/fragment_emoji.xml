@@ -24,7 +24,7 @@
                 android:id="@+id/tv_emoji_control"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="微信红包-自动发表情监控开关："
+                android:text="自动发表情监控开关："
                 android:textColor="@color/blue_light"
                 android:textSize="@dimen/text_size_small" />
 

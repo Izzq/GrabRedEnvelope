@@ -26,7 +26,8 @@
                 android:text="@string/control_tips"
                 android:textColor="@color/blue_light"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -80,6 +81,7 @@
                     android:gravity="center" />
 
             </LinearLayout>
+
             <View
                 style="@style/view_line"
                 android:layout_marginTop="10dp"
@@ -172,6 +174,44 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:text="@string/control_ip_tips"
+                android:textColor="#333333"
+                android:textSize="@dimen/text_size_small"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/control_set_ip" />
+
+                <EditText
+                    android:id="@+id/et_ip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_weight="1"
+                    android:hint="@string/control_ip_hint"
+                    android:textColorHint="#898686"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/view_line"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -218,40 +258,26 @@
                     android:max="100" />
             </LinearLayout>
 
+
             <View
                 style="@style/view_line"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp" />
 
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="IP :" />
-
-                <EditText
-                    android:id="@+id/et_ip"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:layout_weight="1"
-                    android:hint="@string/control_ip_hint"
-                    android:textColorHint="#898686"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:text="@string/control_set_coordinates"
+                android:textColor="#333333"
+                android:textSize="@dimen/text_size_small"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/ll_custom_click"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_height="wrap_content">
 
                 <CheckBox
                     android:id="@+id/cb_custom_click"
@@ -341,14 +367,16 @@
             <View
                 style="@style/view_line"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/control_not_monitor_chats"
                 android:textColor="#333333"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/et_text_filters"
@@ -356,14 +384,9 @@
                 android:layout_height="wrap_content"
                 android:hint="输入..."
                 android:textColorHint="#898686"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btnTest"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="测试"
+                android:textSize="12sp"
                 android:visibility="gone" />
+
 
         </LinearLayout>
     </ScrollView>

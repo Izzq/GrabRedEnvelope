@@ -1,17 +1,17 @@
 <resources>
-    <string name="app_name" translatable="false">SoSo Center</string>
-    <string name="app_name_main" translatable="false">#SoSo Center</string>
+    <string name="app_name" translatable="false">玩法中心</string>
+
 
     <string name="app_content">一点点</string>
 
     <string name="auto_send_emoji">#自动发送表情</string>
 
-    <string name="ntf_resident_title">SoSo Center Notification</string>
-    <string name="ntf_resident_content">…</string>
+    <string name="ntf_resident_title">玩法中心通知</string>
+    <string name="ntf_resident_content">打开游戏…</string>
 
 
     <string name="wechat_description">
-        使用指南：使用前仔细看APP使用说明。辅助功能开启【抢微信红包】，APP 抢微信红包设置是否监控通知和聊天列表页面，同时可设置延迟时间。</string>
+        使用指南：使用前仔细看APP使用说明。辅助功能开启，APP设置是否监控通知和聊天列表页面，同时可设置延迟时间。</string>
     <string name="emoji_description">
         使用指南：使用前仔细看APP使用说明。辅助功能开启【自动发送表情】，支持设置自动输入文本、发送次数、发送间隔时间。</string>
 
@@ -20,30 +20,33 @@
     <string name="test_service_name">无障碍测试</string>
 
 
-    <string name="main_tab_control">控制</string>
+    <string name="main_tab_control">首页</string>
     <string name="main_tab_tutorials">教程</string>
-    <string name="main_tab_history">微信</string>
-    <string name="main_tab_expression">表情</string>
+    <string name="main_tab_history">历史</string>
+    <string name="main_tab_expression">消息</string>
 
-    <string name="history_list_content">从%1$s至今已助你抢到%2$s元</string>
-    <string name="control_switch_accessibility">微信红包监控开关：</string>
+    <string name="history_list_total">从%1$s至今已助你获得%2$s</string>
+    <string name="history_list_content">%1$s获得%2$s</string>
+    <string name="control_switch_accessibility">无障碍监控开关：</string>
     <string name="control_switch_float_windows">悬浮窗开关：</string>
     <string name="control_tips">如何操作请看教程或说明</string>
     <string name="control_usable_tips">提示：服务需开启才有效，监控可选择</string>
-    <string name="control_switch_monitor_notification">通知监控开关：</string>
-    <string name="control_switch_monitor_wechat_list">聊天列表页监控开关：</string>
-    <string name="control_switch_monitor_myself">是否抢自己发的红包：</string>
-    <string name="control_delay_tips">微信防拉仇恨延迟抢红包设置</string>
-    <string name="control_delay_open_red_envelope">打开红包延迟时间：</string>
-    <string name="control_delay_close_red_envelope">红包领取页关闭时间：</string>
+    <string name="control_switch_monitor_notification">通知监控：</string>
+    <string name="control_switch_monitor_wechat_list">列表监控：</string>
+    <string name="control_switch_monitor_myself">是否自己：</string>
+    <string name="control_delay_tips">延时设置：</string>
+    <string name="control_delay_open_red_envelope">打开延迟时间：</string>
+    <string name="control_delay_close_red_envelope">自动关闭时间：</string>
     <string name="control_ip_hint">0.0.0.0</string>
-    <string name="control_custom_coordinates_open_btn">设置红包弹窗按钮点击坐标：</string>
-    <string name="control_custom_coordinates_chat_message_reb_envelope">设置聊天红包框点击坐标：</string>
+    <string name="control_custom_coordinates_open_btn">弹窗按钮坐标：</string>
+    <string name="control_custom_coordinates_chat_message_reb_envelope">聊天框坐标：</string>
     <string name="control_custom_set">设置</string>
-    <string name="control_not_monitor_chats">不抢的群（填自己设置的备注，如有多个以@符号分割）</string>
-    <string name="control_state_tips">辅助功能找到（抢微信红包）开启或关闭。</string>
+    <string name="control_not_monitor_chats">设置（填自己设置的备注，如有多个以@符号分割）</string>
+    <string name="control_state_tips">辅助功能找到应用，开启或关闭。</string>
     <string name="control_float_windows_tips">悬浮窗开启或关闭。</string>
-
+    <string name="control_ip_tips">IP设置：</string>
+    <string name="control_set_ip">连接IP:</string>
+    <string name="control_set_coordinates">坐标设置:</string>
 
 
 </resources>

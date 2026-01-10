@@ -57,7 +57,7 @@ class RecordFragment : BaseFragment(R.layout.fragment_record) {
             list.addAll(getData())
             if (list.isNullOrEmpty()) return@launch
             binding.tvRecordTitle.text =
-                getString(R.string.history_list_content, startTime, "$total")
+                getString(R.string.history_list_total, startTime, "$total")
             arrayAdapter.notifyDataSetChanged()
         }
     }
@@ -69,7 +69,13 @@ class RecordFragment : BaseFragment(R.layout.fragment_record) {
             val wechatRedEnvelopes = WechatRedEnvelopeDb.getAllData()
             for (wechatRedEnvelope in wechatRedEnvelopes.asReversed()) {
                 total = total.doubleCount(wechatRedEnvelope.count.split("元")[0].toDouble())
-                list.add("${getYearToMinute(wechatRedEnvelope.time)} 助你抢到了 ${wechatRedEnvelope.count}")
+                list.add(
+                    getString(
+                        R.string.history_list_content,
+                        "${getYearToMinute(wechatRedEnvelope.time)} ",
+                        wechatRedEnvelope.count
+                    )
+                )
             }
             if (wechatRedEnvelopes.isNotEmpty()) {
                 startTime = getYearToMinute(wechatRedEnvelopes[0].time)
