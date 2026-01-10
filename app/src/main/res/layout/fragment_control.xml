@@ -7,7 +7,7 @@
 
 
     <ScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
@@ -23,8 +23,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center_horizontal"
-                android:text="如何操作请看教程或说明"
-                android:textColor="@color/blue_light" />
+                android:text="@string/control_tips"
+                android:textColor="@color/blue_light"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="微信红包监控开关："
+                    android:text="@string/control_switch_accessibility"
                     android:textSize="@dimen/text_size_small" />
 
                 <CheckBox
@@ -56,15 +58,17 @@
                 android:layout_marginBottom="10dp" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
-                android:text="提示：服务需开启才有效，监控可选择。"
-                android:textSize="@dimen/text_size_small" />
+                android:text="@string/control_usable_tips"
+                android:textColor="#333333"
+                android:textSize="@dimen/text_size_small"
+                android:textStyle="bold" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
@@ -74,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="通知监控开关："
+                    android:text="@string/control_switch_monitor_notification"
                     android:textSize="@dimen/text_size_small" />
 
                 <CheckBox
@@ -88,7 +92,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
@@ -98,7 +102,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="聊天列表页监控开关："
+                    android:text="@string/control_switch_monitor_wechat_list"
                     android:textSize="@dimen/text_size_small" />
 
                 <CheckBox
@@ -112,7 +116,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
@@ -122,7 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="是否抢自己发的红包："
+                    android:text="@string/control_switch_monitor_myself"
                     android:textSize="@dimen/text_size_small" />
 
                 <CheckBox
@@ -146,19 +150,21 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:gravity="center"
-                    android:text="微信防拉仇恨延迟抢红包设置"
-                    android:textSize="@dimen/text_size_small" />
+                    android:text="@string/control_delay_tips"
+                    android:textColor="#333333"
+                    android:textSize="@dimen/text_size_small"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_qq_putong"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="打开红包延迟时间："
+                    android:text="@string/control_delay_open_red_envelope"
                     android:textSize="@dimen/text_size_small" />
 
                 <SeekBar
@@ -170,10 +176,10 @@
 
                 <TextView
                     android:id="@+id/tv_qq_lingqu"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="红包领取页关闭时间："
+                    android:text="@string/control_delay_close_red_envelope"
                     android:textSize="@dimen/text_size_small" />
 
                 <SeekBar
@@ -184,47 +190,78 @@
                     android:max="100" />
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/et_ip"
+            <View
+                style="@style/view_line"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="IP设置"
-                android:textColorHint="#898686" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="IP :" />
+
+                <EditText
+                    android:id="@+id/et_ip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_weight="1"
+                    android:hint="@string/control_ip_hint"
+                    android:textColorHint="#898686"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_custom_click"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
 
                 <CheckBox
                     android:id="@+id/cb_custom_click"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="自定义拆红包按钮坐标：" />
+                    android:hint="@string/control_custom_coordinates_open_btn"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/et_pointX"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:hint="x"
                     android:inputType="numberDecimal"
                     android:maxLength="4"
-                    tools:text="551" />
+                    android:textSize="12sp"
+                    tools:text="0" />
 
                 <EditText
                     android:id="@+id/et_pointY"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:hint="y"
                     android:inputType="numberDecimal"
                     android:maxLength="4"
-                    tools:text="1556" />
+                    android:textSize="12sp"
+                    tools:text="0" />
 
                 <Button
                     android:id="@+id/btn_set_reb_btn_point"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="获取" />
+                    android:layout_width="70dp"
+                    android:layout_height="35dp"
+                    android:text="@string/control_custom_set"
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -237,52 +274,68 @@
                     android:id="@+id/cb_custom_list_click"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="自定打开列表红包坐标：" />
+                    android:hint="@string/control_custom_coordinates_chat_message_reb_envelope"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/et_list_pointX"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:hint="x"
                     android:inputType="numberDecimal"
                     android:maxLength="4"
-                    tools:text="551" />
+                    android:textSize="12sp"
+                    tools:text="0" />
 
                 <EditText
                     android:id="@+id/et_list_pointY"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:hint="y"
                     android:inputType="numberDecimal"
                     android:maxLength="4"
-                    tools:text="1556" />
+                    android:textSize="12sp"
+                    tools:text="0" />
 
                 <Button
                     android:id="@+id/btn_set_reb_btn_list_point"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="获取" />
+                    android:layout_width="70dp"
+                    android:layout_height="35dp"
+                    android:text="@string/control_custom_set"
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
+            <View
+                style="@style/view_line"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="不抢的群（填自己设置的备注，如有多个以@符号分割）" />
+                android:hint="@string/control_not_monitor_chats"
+                android:textColor="#333333"
+                android:textSize="12sp" />
 
             <EditText
                 android:id="@+id/et_text_filters"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="输入..."
-                android:textColorHint="#898686" />
+                android:textColorHint="#898686"
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/btnTest"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="测试" />
+                android:text="测试"
+                android:visibility="gone" />
 
         </LinearLayout>
     </ScrollView>

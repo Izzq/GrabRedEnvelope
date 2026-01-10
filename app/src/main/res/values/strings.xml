@@ -19,4 +19,28 @@
     <string name="accessibility_service_description">无障碍服务测试</string>
     <string name="test_service_name">无障碍测试</string>
 
+
+    <string name="main_tab_control">控制</string>
+    <string name="main_tab_tutorials">教程</string>
+    <string name="main_tab_history">微信</string>
+    <string name="main_tab_expression">表情</string>
+
+    <string name="history_list_content">从%1$s至今已助你抢到%2$s元</string>
+    <string name="control_switch_accessibility">微信红包监控开关：</string>
+    <string name="control_tips">如何操作请看教程或说明</string>
+    <string name="control_usable_tips">提示：服务需开启才有效，监控可选择</string>
+    <string name="control_switch_monitor_notification">通知监控开关：</string>
+    <string name="control_switch_monitor_wechat_list">聊天列表页监控开关：</string>
+    <string name="control_switch_monitor_myself">是否抢自己发的红包：</string>
+    <string name="control_delay_tips">微信防拉仇恨延迟抢红包设置</string>
+    <string name="control_delay_open_red_envelope">打开红包延迟时间：</string>
+    <string name="control_delay_close_red_envelope">红包领取页关闭时间：</string>
+    <string name="control_ip_hint">0.0.0.0</string>
+    <string name="control_custom_coordinates_open_btn">设置红包弹窗按钮点击坐标：</string>
+    <string name="control_custom_coordinates_chat_message_reb_envelope">设置聊天红包框点击坐标：</string>
+    <string name="control_custom_set">设置</string>
+    <string name="control_not_monitor_chats">不抢的群（填自己设置的备注，如有多个以@符号分割）</string>
+    <string name="control_state_tips">辅助功能找到（抢微信红包）开启或关闭。</string>
+
+
 </resources>

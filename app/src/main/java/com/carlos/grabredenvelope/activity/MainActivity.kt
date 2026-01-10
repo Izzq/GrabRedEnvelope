@@ -2,14 +2,14 @@ package com.carlos.grabredenvelope.activity
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.PermissionUtils
+import com.blankj.utilcode.util.PermissionUtils.SimpleCallback
 import com.carlos.cutils.base.adapter.CBaseMyPagerAdapter
+import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.databinding.ActivityMainBinding
 import com.carlos.grabredenvelope.extensions.viewBinding
 import com.carlos.grabredenvelope.fragment.AboutFragment
@@ -20,37 +20,6 @@ import com.carlos.grabredenvelope.fragment.RecordFragment
 import com.carlos.grabredenvelope.notification.NotificationKits
 import com.carlos.grabredenvelope.services.wechat.WechatService
 
-/**
- *                             _ooOoo_
- *                            o8888888o
- *                            88" . "88
- *                            (| -_- |)
- *                            O\  =  /O
- *                         ____/`---'\____
- *                       .'  \\|     |//  `.
- *                      /  \\|||  :  |||//  \
- *                     /  _||||| -:- |||||-  \
- *                     |   | \\\  -  /// |   |
- *                     | \_|  ''\---/''  |   |
- *                     \  .-\__  `-`  ___/-. /
- *                   ___`. .'  /--.--\  `. . __
- *                ."" '<  `.___\_<|>_/___.'  >'"".
- *               | | :  `- \`.;`\ _ /`;.`/ - ` : | |
- *               \  \ `-.   \_ __\ /__ _/   .-` /  /
- *          ======`-.____`-.___\_____/___.-`____.-'======
- *                             `=---='
- *          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- *                     佛祖保佑        永无BUG
- *            佛曰:
- *                   写字楼里写字间，写字间里程序员；
- *                   程序人员写程序，又拿程序换酒钱。
- *                   酒醒只在网上坐，酒醉还来网下眠；
- *                   酒醉酒醒日复日，网上网下年复年。
- *                   但愿老死电脑间，不愿鞠躬老板前；
- *                   奔驰宝马贵者趣，公交自行程序员。
- *                   别人笑我忒疯癫，我笑自己命太贱；
- *                   不见满街漂亮妹，哪个归得程序员？
- */
 
 /**
  * Github: https://github.com/xbdcc/.
@@ -60,6 +29,7 @@ open class MainActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
 
+    private var titles = mutableListOf<String>()
 
     var fragments = mutableListOf<Fragment>(
         ControlFragment(),
@@ -67,20 +37,21 @@ open class MainActivity : BaseActivity() {
         RecordFragment(),
         EmojiFragment()
     )
-    var titles = mutableListOf("控制", "教程", "微信", "表情")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
         initView()
         requestPermissionNotification()
         addListener()
-
     }
 
-
     private fun initView() {
+        titles.add(getString(R.string.main_tab_control))
+        titles.add(getString(R.string.main_tab_tutorials))
+        titles.add(getString(R.string.main_tab_history))
+        titles.add(getString(R.string.main_tab_expression))
+
         val adapter = CBaseMyPagerAdapter(supportFragmentManager, fragments, titles)
         binding.viewPager.adapter = adapter
         binding.slidingTabs.setupWithViewPager(binding.viewPager)
@@ -92,10 +63,11 @@ open class MainActivity : BaseActivity() {
             AccessibilityServiceListeners {
             override fun updateStatus(boolean: Boolean) {
                 LogUtils.d("updateStatus:$boolean")
-                val controlFragment = fragments[0] as ControlFragment
-                controlFragment.updateControlView(boolean)
+                val fragment = fragments.getOrNull(0)
+                if (fragment is ControlFragment) {
+                    fragment.updateControlView(boolean)
+                }
             }
-//        }, "${packageName}/${MyAccessibilityService::class.java.name}")
         }, "${packageName}/${WechatService::class.java.name}")
     }
 
@@ -111,36 +83,19 @@ open class MainActivity : BaseActivity() {
     }
 
 
-    private val POST_NOTIFICATIONS_REQUEST = 1002
     private fun requestPermissionNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                POST_NOTIFICATIONS_REQUEST
-            )
-        } else {
-            // 如果是 Android 13 以下的版本，不需要申请通知权限
-        }
-    }
+            PermissionUtils.permission(Manifest.permission.POST_NOTIFICATIONS)
+                .callback(object : SimpleCallback {
+                    override fun onGranted() {
+                        //启动前台服务-开启常驻通知栏
+                        NotificationKits.startPermanentNotification(this@MainActivity)
+                    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == POST_NOTIFICATIONS_REQUEST) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // 用户同意通知权限
-                //启动前台服务-开启常驻通知栏
-                NotificationKits.startPermanentNotification(this)
-            } else {
-                // 用户拒绝通知权限
+                    override fun onDenied() {
 
-            }
+                    }
+                }).request()
         }
     }
 

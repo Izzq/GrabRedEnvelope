@@ -8,7 +8,7 @@
 
 
     <!-- 控件高度-->
-    <dimen name="title_bar">50dp</dimen>
+    <dimen name="title_bar">60dp</dimen>
     <dimen name="margin_space">10dp</dimen>
     <dimen name="margin_left">10dp</dimen>
     <dimen name="margin_right">10dp</dimen>

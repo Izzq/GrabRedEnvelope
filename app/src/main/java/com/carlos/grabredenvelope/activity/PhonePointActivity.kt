@@ -1,6 +1,6 @@
 package com.carlos.grabredenvelope.activity
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,13 +10,9 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.blankj.utilcode.util.LogUtils
-import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.databinding.ActivityPhonePointBinding
 import com.carlos.grabredenvelope.extensions.viewBinding
-import com.carlos.grabredenvelope.view.OverlayView
 import com.gyf.immersionbar.BarHide
 import com.gyf.immersionbar.ktx.immersionBar
 
@@ -33,6 +29,10 @@ class PhonePointActivity : AppCompatActivity() {
         //设置聊天窗点击坐标
         const val SET_OPEN_LIST_RED_POINT_REQUEST_CODE = 2000
 
+        private const val REQ_PICK_IMAGE = 1001
+
+        private const val REQUEST_STORAGE_PERMISSION = 2001
+
         fun start(context: Activity, requestCode: Int) {
             val intent = Intent(context, PhonePointActivity::class.java)
             context.startActivityForResult(intent, requestCode)
@@ -40,41 +40,21 @@ class PhonePointActivity : AppCompatActivity() {
 
     }
 
-
     private val binding by viewBinding(ActivityPhonePointBinding::inflate)
-
-
-    private val REQ_PICK_IMAGE = 1001
-    private val REQUEST_STORAGE_PERMISSION = 2001
-
-    private lateinit var imageView: ImageView
-    private lateinit var overlayView: OverlayView
 
     private var mViewX = 0
     private var mViewY = 0
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
         hideSystemUI()
-
-        imageView = findViewById(R.id.imageView)
-        overlayView = findViewById(R.id.overlayView)
-
-
-        // 请求权限
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            checkStoragePermission()
-//        } else {
-//            // 如果是 Android 6.0 以下版本，直接开始
-//            pickImage()
-//        }
 
         // 如果是 Android 6.0 以下版本，直接开始
         pickImage()
 
-        imageView.setOnTouchListener { _, event ->
+        binding.imageView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 handleClick(event)
                 true
@@ -104,22 +84,6 @@ class PhonePointActivity : AppCompatActivity() {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
             hideSystemUI()
-        }
-    }
-
-    // 检查存储权限
-    private fun checkStoragePermission() {
-        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(
-                this,
-                permission
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // 如果没有权限，请求权限
-            ActivityCompat.requestPermissions(this, arrayOf(permission), REQUEST_STORAGE_PERMISSION)
-        } else {
-            // 如果已有权限，继续执行
-            pickImage()
         }
     }
 
@@ -156,16 +120,16 @@ class PhonePointActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQ_PICK_IMAGE && resultCode == RESULT_OK) {
             val uri: Uri? = data?.data
-            imageView.setImageURI(uri)
+            binding.imageView.setImageURI(uri)
         }
     }
 
     // 处理点击事件并显示坐标
     private fun handleClick(event: MotionEvent) {
-        val drawable = imageView.drawable
+        val drawable = binding.imageView.drawable
         if (drawable == null) return
 
-        val rect = getImageDisplayRect(imageView)
+        val rect = getImageDisplayRect(binding.imageView)
 
         val viewX = event.x
         val viewY = event.y
@@ -181,7 +145,7 @@ class PhonePointActivity : AppCompatActivity() {
 
         // 画点
         val showText = "(${imageX.toInt()}, ${imageY.toInt()})"
-        overlayView.setPoint(viewX, viewY, showText)
+        binding.overlayView.setPoint(viewX, viewY, showText)
 
         mViewX = viewX.toInt()
         mViewY = viewY.toInt()

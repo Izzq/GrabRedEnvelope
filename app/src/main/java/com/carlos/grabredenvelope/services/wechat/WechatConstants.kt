@@ -2,37 +2,6 @@ package com.carlos.grabredenvelope.services.wechat
 
 import com.blankj.utilcode.util.LogUtils
 
-/**
- *                             _ooOoo_
- *                            o8888888o
- *                            88" . "88
- *                            (| -_- |)
- *                            O\  =  /O
- *                         ____/`---'\____
- *                       .'  \\|     |//  `.
- *                      /  \\|||  :  |||//  \
- *                     /  _||||| -:- |||||-  \
- *                     |   | \\\  -  /// |   |
- *                     | \_|  ''\---/''  |   |
- *                     \  .-\__  `-`  ___/-. /
- *                   ___`. .'  /--.--\  `. . __
- *                ."" '<  `.___\_<|>_/___.'  >'"".
- *               | | :  `- \`.;`\ _ /`;.`/ - ` : | |
- *               \  \ `-.   \_ __\ /__ _/   .-` /  /
- *          ======`-.____`-.___\_____/___.-`____.-'======
- *                             `=---='
- *          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- *                     佛祖保佑        永无BUG
- *            佛曰:
- *                   写字楼里写字间，写字间里程序员；
- *                   程序人员写程序，又拿程序换酒钱。
- *                   酒醒只在网上坐，酒醉还来网下眠；
- *                   酒醉酒醒日复日，网上网下年复年。
- *                   但愿老死电脑间，不愿鞠躬老板前；
- *                   奔驰宝马贵者趣，公交自行程序员。
- *                   别人笑我忒疯癫，我笑自己命太贱；
- *                   不见满街漂亮妹，哪个归得程序员？
- */
 
 /**
  * Github: https://github.com/xbdcc/.
@@ -41,9 +10,12 @@ import com.blankj.utilcode.util.LogUtils
 object WechatConstants {
 
     val WECHAT_PACKAGE = "com.tencent.mm"
+
     /* 页面 */
-    val WECHAT_LUCKYMONEY_ACTIVITY = "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyNotHookReceiveUI" //微信红包弹框
-    val WECHAT_LUCKYMONEY_ACTIVITY1 = "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyNewReceiveUI" //微信红包弹框
+    val WECHAT_LUCKYMONEY_ACTIVITY =
+        "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyNotHookReceiveUI" //微信红包弹框
+    val WECHAT_LUCKYMONEY_ACTIVITY1 =
+        "$WECHAT_PACKAGE.plugin.luckymoney.ui.LuckyMoneyNewReceiveUI" //微信红包弹框
 
 
     val WECHAT_LUCKYMONEYDETAILUI_ACTIVITY =
@@ -69,6 +41,7 @@ object WechatConstants {
 
     /* 聊天文本输入框控件 */
     var CHAT_EDITTEXT_ID = "com.tencent.mm:id/b4a" //聊天文本输入框id
+
     /* 发送按钮控件 */
     var SEND_TEXT_ID = "com.tencent.mm:id/b8k" //发送按钮id
 
@@ -90,6 +63,7 @@ object WechatConstants {
                 RED_ENVELOPE_COUNT_ID = "com.tencent.mm:id/csy" //红包金额id
 
             }
+
             "7.0.4" -> {
 
                 RED_ENVELOPE_ID = "com.tencent.mm:id/ap9" //聊天页面红包点击框控件id
@@ -105,6 +79,7 @@ object WechatConstants {
                 RED_ENVELOPE_COUNT_ID = "com.tencent.mm:id/cuk" //红包金额id
 
             }
+
             "7.0.5" -> {
 
                 RED_ENVELOPE_ID = "com.tencent.mm:id/ar0" //聊天页面红包点击框控件id
@@ -120,6 +95,7 @@ object WechatConstants {
                 RED_ENVELOPE_COUNT_ID = "com.tencent.mm:id/cyw" //红包金额id
 
             }
+
             "7.0.8", "7.0.9", "7.0.10", "7.0.11" -> {
                 /* 微信对话页控件 */
                 RED_ENVELOPE_ID = "com.tencent.mm:id/atb" // 红包框可点击控件id
@@ -134,6 +110,7 @@ object WechatConstants {
                 /* 红包详情页控件 */
                 RED_ENVELOPE_COUNT_ID = "com.tencent.mm:id/d62" //红包金额id
             }
+
             "7.0.12" -> {
                 /* 微信聊天列表页控件 */
                 RED_ENVELOPE_RECT_TITLE_ID = "com.tencent.mm:id/b1t" //Item可点击控件id
@@ -148,6 +125,7 @@ object WechatConstants {
                 /* 红包详情页控件 */
                 RED_ENVELOPE_COUNT_ID = "com.tencent.mm:id/d4y" //红包金额id
             }
+
             "7.0.16" -> {
                 /* 微信聊天列表页控件 */
                 RED_ENVELOPE_RECT_TITLE_ID = "com.tencent.mm:id/b4r" //Item可点击控件id
@@ -162,6 +140,7 @@ object WechatConstants {
                 /* 红包详情页控件 */
                 RED_ENVELOPE_COUNT_ID = "com.tencent.mm:id/d_h" //红包金额id
             }
+
             "8.0.0", "8.0.1" -> {
                 /* 微信聊天列表页控件 */
                 RED_ENVELOPE_RECT_TITLE_ID = "com.tencent.mm:id/bg1" //Item可点击控件id
@@ -177,6 +156,7 @@ object WechatConstants {
                 RED_ENVELOPE_COUNT_ID = "com.tencent.mm:id/eyq" //红包金额id
                 CHAT_EDITTEXT_ID = "com.tencent.mm:id/auj" //聊天文本输入框ID
             }
+
             "8.0.18", "8.0.19" -> {
                 /* 微信聊天列表页控件 */
                 RED_ENVELOPE_RECT_TITLE_ID = "com.tencent.mm:id/btg" //Item可点击控件id
@@ -194,7 +174,8 @@ object WechatConstants {
                 CHAT_EDITTEXT_ID = "com.tencent.mm:id/b4a" //聊天文本输入框id
                 SEND_TEXT_ID = "com.tencent.mm:id/b8k" //发送按钮id
             }
-            "8.0.31", "8.0.32"  -> {
+
+            "8.0.31", "8.0.32" -> {
                 /* 微信聊天列表页控件 */
                 RED_ENVELOPE_RECT_TITLE_ID = "com.tencent.mm:id/bth" //Item可点击控件id
                 RED_ENVELOPE_TITLE_ID = "com.tencent.mm:id/fhs" //Item内容控件id，通过关键字判断
@@ -211,6 +192,7 @@ object WechatConstants {
                 CHAT_EDITTEXT_ID = "com.tencent.mm:id/b4a" //聊天文本输入框id
                 SEND_TEXT_ID = "com.tencent.mm:id/b8k" //发送按钮id
             }
+
             else -> { //8.0.45,8.0.47
                 /* 微信聊天列表页控件 */
                 RED_ENVELOPE_RECT_TITLE_ID = "com.tencent.mm:id/cj1" //Item可点击控件id

@@ -85,11 +85,11 @@ abstract class BaseAccessibilityService : CBaseAccessibilityService() {
             .setLargeIcon(
                 BitmapFactory.decodeResource(
                     this.resources,
-                    R.mipmap.xiaobudian
+                    R.mipmap.ic_launcher
                 )
             ) // set the large icon in the drop down list.
             .setContentTitle(getString(R.string.app_name)) // set the caption in the drop down list.
-            .setSmallIcon(R.mipmap.xiaobudian) // set the small icon in state.
+            .setSmallIcon(R.mipmap.ic_launcher) // set the small icon in state.
             .setContentText(getString(R.string.app_content)) // set context content.
             .setWhen(System.currentTimeMillis()) // set the time for the notification to occur.
 
