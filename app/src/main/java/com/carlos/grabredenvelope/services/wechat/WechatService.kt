@@ -40,6 +40,33 @@ import java.io.IOException
 
 class WechatService : BaseAccessibilityService(), ICommandService {
 
+    companion object {
+
+        //是否运行中
+        @Volatile
+        private var isRunningService = false
+
+        //是否允许抢红包
+        @Volatile
+        private var isSwitchOn = true
+
+
+        /** 服务是否开启中 */
+        fun isRunningServiceState(): Boolean {
+            return isRunningService
+        }
+
+        /** 是否允许抢红包 */
+        fun isSwitchOnState(): Boolean {
+            return isRunningService && isSwitchOn
+        }
+
+        /** 设置是否允许抢红包 */
+        fun setSwitchOnState(state: Boolean) {
+            isSwitchOn = state
+        }
+    }
+
     //监听的应用包名
     override var monitorPackageName = WECHAT_PACKAGE
 
@@ -63,9 +90,17 @@ class WechatService : BaseAccessibilityService(), ICommandService {
     //WebSocket Client
     private var ws: WsClient? = null
 
+    //=======================================================================
+    // 开关
+    //=======================================================================
 
+
+    //=======================================================================
+    // 生命周期
+    //=======================================================================
     override fun onCreate() {
         super.onCreate()
+        isRunningService = true
         WechatConstants.setVersion(AppUtils.getVersionName(WECHAT_PACKAGE) ?: "")
         loadEmojiConfig()
         canSendEmoji = true
@@ -74,6 +109,7 @@ class WechatService : BaseAccessibilityService(), ICommandService {
 
     override fun onDestroy() {
         super.onDestroy()
+        isRunningService = false
         closeWs()
     }
 
@@ -153,6 +189,11 @@ class WechatService : BaseAccessibilityService(), ICommandService {
      */
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         super.onAccessibilityEvent(event)
+
+        if (!isSwitchOn) {
+            return
+        }
+
         if (AccessibilityEvent.TYPE_VIEW_CLICKED == event.eventType) {
             LogUtils.d("monitorViewClicked:$event")
             if ((status != HAS_CLICKED)) {
@@ -164,6 +205,11 @@ class WechatService : BaseAccessibilityService(), ICommandService {
 
     /** 监听通知变化 */
     override fun monitorNotificationChanged(event: AccessibilityEvent) {
+
+        if (!isSwitchOn) {
+            return
+        }
+
         LogUtils.d("monitorNotificationChanged:$event")
         if (RedEnvelopePreferences.wechatControl.isMonitorNotification.not()) {
             return
@@ -176,6 +222,11 @@ class WechatService : BaseAccessibilityService(), ICommandService {
 
     /** 监听窗口变化 */
     override fun monitorWindowChanged(event: AccessibilityEvent) {
+
+        if (!isSwitchOn) {
+            return
+        }
+
         LogUtils.d("monitorWindowChanged:$event")
 
         if (WechatFilter.isRemarkFilter(rootInActiveWindow)) return
@@ -189,6 +240,11 @@ class WechatService : BaseAccessibilityService(), ICommandService {
 
     /** 监听内容变化 */
     override fun monitorContentChanged(event: AccessibilityEvent) {
+
+        if (!isSwitchOn) {
+            return
+        }
+
         LogUtils.d("monitorContentChanged:$event")
 
         if (WechatFilter.isRemarkFilter(rootInActiveWindow)) return

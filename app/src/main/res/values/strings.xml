@@ -27,6 +27,7 @@
 
     <string name="history_list_content">从%1$s至今已助你抢到%2$s元</string>
     <string name="control_switch_accessibility">微信红包监控开关：</string>
+    <string name="control_switch_float_windows">悬浮窗开关：</string>
     <string name="control_tips">如何操作请看教程或说明</string>
     <string name="control_usable_tips">提示：服务需开启才有效，监控可选择</string>
     <string name="control_switch_monitor_notification">通知监控开关：</string>
@@ -41,6 +42,8 @@
     <string name="control_custom_set">设置</string>
     <string name="control_not_monitor_chats">不抢的群（填自己设置的备注，如有多个以@符号分割）</string>
     <string name="control_state_tips">辅助功能找到（抢微信红包）开启或关闭。</string>
+    <string name="control_float_windows_tips">悬浮窗开启或关闭。</string>
+
 
 
 </resources>

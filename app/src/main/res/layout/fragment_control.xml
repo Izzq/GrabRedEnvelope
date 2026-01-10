@@ -57,6 +57,34 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/control_switch_float_windows"
+                    android:textSize="@dimen/text_size_small" />
+
+                <CheckBox
+                    android:id="@+id/cb_float_windows"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:button="@mipmap/switch_off"
+                    android:checked="false"
+                    android:gravity="center" />
+
+            </LinearLayout>
+            <View
+                style="@style/view_line"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

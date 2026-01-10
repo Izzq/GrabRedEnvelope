@@ -15,18 +15,17 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.PermissionUtils
+import com.blankj.utilcode.util.ServiceUtils.stopService
+import com.blankj.utilcode.util.VibrateUtils
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.activity.MainActivity
 import com.carlos.grabredenvelope.activity.PhonePointActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
 import com.carlos.grabredenvelope.databinding.FragmentControlBinding
+import com.carlos.grabredenvelope.float_windows.FloatingWindowService
 import com.carlos.grabredenvelope.websocket.WebSocketConst
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Github: https://github.com/xbdcc/.
@@ -96,29 +95,41 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
     override fun initView(view: View) {
         //无障碍开关状态
         binding.cbQqControl.setOnCheckedChangeListener { _, isChecked ->
+            VibrateUtils.vibrate(100)
             binding.cbQqControl.isChecked = !isChecked
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             Toast.makeText(view.context, getString(R.string.control_state_tips), Toast.LENGTH_SHORT)
                 .show()
         }
+
+        //悬浮窗开关状态
+        binding.cbFloatWindows.setOnCheckedChangeListener { _, isChecked ->
+            VibrateUtils.vibrate(100)
+            switchFloatWindowsService(isChecked)
+        }
+
         //监视通知开关状态
         binding.cbWechatNotificationControl.setOnCheckedChangeListener { _, isChecked ->
+            VibrateUtils.vibrate(100)
             wechatControlVO.isMonitorNotification = isChecked
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
         //监视列表开关状态
         binding.cbWechatChatControl.setOnCheckedChangeListener { _, isChecked ->
+            VibrateUtils.vibrate(100)
             wechatControlVO.isMonitorChat = isChecked
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
         //是否抢自己开关状态
         binding.cbIfGrabSelf.setOnCheckedChangeListener { _, isChecked ->
+            VibrateUtils.vibrate(100)
             wechatControlVO.ifGrabSelf = isChecked
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
 
         //设置红包按钮坐标
         binding.cbCustomClick.setOnCheckedChangeListener { _, isChecked ->
+            VibrateUtils.vibrate(100)
             wechatControlVO.isCustomClick = isChecked
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
@@ -148,6 +159,7 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
         //设置红包框坐标
         binding.cbCustomListClick.setOnCheckedChangeListener { _, isChecked ->
+            VibrateUtils.vibrate(100)
             wechatControlVO.isCustomListClick = isChecked
             RedEnvelopePreferences.wechatControl = wechatControlVO
         }
@@ -188,19 +200,6 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
         //设置IP
         setupIpValidation(binding.etIp)
 
-        binding.btnTest.setOnClickListener {
-            GlobalScope.launch {
-                val delayTime =
-                    500L + (1000L * RedEnvelopePreferences.wechatControl.delayOpenTime / 10)
-                LogUtils.d("start show delay open time:$delayTime")
-                delay(delayTime)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireActivity(), "延时打开 $delayTime ms", Toast.LENGTH_SHORT)
-                        .show()
-                    LogUtils.d("end show delay open time:$delayTime")
-                }
-            }
-        }
     }
 
 
@@ -352,6 +351,79 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
 
     //==============================================================================================
+    // 悬浮窗
+    //==============================================================================================
 
+
+    /**开启悬浮窗*/
+    private fun switchFloatWindowsService(isChecked: Boolean) {
+        if (isChecked) {
+            startFloatingWindowService()
+        } else {
+            stopFloatingWindowService()
+        }
+    }
+
+    // 启动悬浮窗服务
+    private fun startFloatingWindowService() {
+        if (FloatingWindowService.isRunningService) {
+            return
+        }
+        val context = context
+        // 检查悬浮窗权限
+        if (PermissionUtils.isGrantedDrawOverlays()) {
+            // 启动悬浮窗服务
+            if (context != null) {
+                context.startService(Intent(context, FloatingWindowService::class.java))
+                updateFloatWindowsState(true)
+                Toast.makeText(context, "悬浮窗已开启", Toast.LENGTH_SHORT).show()
+            } else {
+                binding.cbFloatWindows.isChecked = false
+                updateFloatWindowsState(false)
+            }
+        } else {
+            PermissionUtils.requestDrawOverlays(object : PermissionUtils.SimpleCallback {
+                override fun onGranted() {
+                    // 启动悬浮窗服务
+                    if (context != null) {
+                        context.startService(Intent(context, FloatingWindowService::class.java))
+                        updateFloatWindowsState(true)
+                        Toast.makeText(context, "悬浮窗已开启", Toast.LENGTH_SHORT).show()
+                    } else {
+                        binding.cbFloatWindows.isChecked = false
+                        updateFloatWindowsState(false)
+                    }
+                }
+
+                override fun onDenied() {
+                    updateFloatWindowsState(false)
+                    binding.cbFloatWindows.isChecked = false
+                }
+            })
+        }
+    }
+
+    // 停止悬浮窗服务
+    private fun stopFloatingWindowService() {
+        val intent = Intent(context, FloatingWindowService::class.java)
+        stopService(intent)
+        updateFloatWindowsState(false)
+        Toast.makeText(context, "悬浮窗已关闭", Toast.LENGTH_SHORT).show()
+    }
+
+
+    /**
+     * 更新悬浮窗状态
+     */
+    fun updateFloatWindowsState(checkStatus: Boolean) {
+        val activity = requireActivity()
+        if (activity is MainActivity) {
+            if (checkStatus) binding.cbFloatWindows.setButtonDrawable(R.mipmap.switch_on)
+            else binding.cbFloatWindows.setButtonDrawable(R.mipmap.switch_off)
+        }
+    }
+
+
+//==============================================================================================
 
 }
