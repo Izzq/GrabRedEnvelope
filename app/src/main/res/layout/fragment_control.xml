@@ -228,7 +228,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_qq_putong"
+                    android:id="@+id/tv_open_delay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -236,14 +236,14 @@
                     android:textSize="@dimen/text_size_small" />
 
                 <SeekBar
-                    android:id="@+id/sb_qq_putong"
+                    android:id="@+id/sb_open_delay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:max="100" />
 
                 <TextView
-                    android:id="@+id/tv_qq_lingqu"
+                    android:id="@+id/tv_auto_close"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -251,7 +251,7 @@
                     android:textSize="@dimen/text_size_small" />
 
                 <SeekBar
-                    android:id="@+id/sb_qq_lingqu"
+                    android:id="@+id/sb_auto_close"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"

@@ -36,8 +36,8 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
 
     private var wechatControlVO = WechatControlVO()
-    private var t_putong: Int = 0
-    private var t_lingqu: Int = 0
+    private var openDelayTime: Int = 0
+    private var autoCloseDelayTime: Int = 0
 
     private lateinit var binding: FragmentControlBinding
 
@@ -188,8 +188,8 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
         }
 
         //设置延时
-        binding.sbQqPutong.setOnSeekBarChangeListener(this)
-        binding.sbQqLingqu.setOnSeekBarChangeListener(this)
+        binding.sbOpenDelay.setOnSeekBarChangeListener(this)
+        binding.sbAutoClose.setOnSeekBarChangeListener(this)
 
         //设置群过滤
         binding.etTextFilters.setText(RedEnvelopePreferences.grabFilter)
@@ -211,19 +211,19 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
         binding.cbWechatChatControl.isChecked = wechatControlVO.isMonitorChat
         binding.cbIfGrabSelf.isChecked = wechatControlVO.ifGrabSelf
 
-        t_putong = wechatControlVO.delayOpenTime
-        binding.tvQqPutong.text =
-            getString(R.string.control_delay_open_red_envelope) + t_putong / 10.0 + "s"
-        binding.sbQqPutong.progress = t_putong
+        openDelayTime = wechatControlVO.delayOpenTime
+        binding.tvOpenDelay.text =
+            getString(R.string.control_delay_open_red_envelope) + openDelayTime / 10.0 + "s"
+        binding.sbOpenDelay.progress = openDelayTime
 
-        t_lingqu = wechatControlVO.delayCloseTime
-        binding.sbQqLingqu.progress = t_lingqu - 1
-        if (t_lingqu == 101) {
-            binding.tvQqLingqu.text =
+        autoCloseDelayTime = wechatControlVO.delayCloseTime
+        binding.sbAutoClose.progress = autoCloseDelayTime - 1
+        if (autoCloseDelayTime == 101) {
+            binding.tvAutoClose.text =
                 getString(R.string.control_delay_close_red_envelope) + "不关闭"
         } else {
-            binding.tvQqLingqu.text =
-                getString(R.string.control_delay_close_red_envelope) + t_lingqu / 10.0 + "s"
+            binding.tvAutoClose.text =
+                getString(R.string.control_delay_close_red_envelope) + autoCloseDelayTime / 10.0 + "s"
         }
 
         binding.cbCustomClick.isChecked = wechatControlVO.isCustomClick
@@ -253,26 +253,24 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
     @SuppressLint("SetTextI18n")
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-        when (seekBar.id) {
-            R.id.sb_qq_putong -> {
-                LogUtils.d("sb_qq_pu_tong:$progress")
-                t_putong = progress
-                binding.tvQqPutong.text =
-                    getString(R.string.control_delay_open_red_envelope) + t_putong / 10.0 + "s"
-                wechatControlVO.delayOpenTime = t_putong
+        when (seekBar) {
+            binding.sbOpenDelay -> {
+                openDelayTime = progress
+                binding.tvOpenDelay.text =
+                    getString(R.string.control_delay_open_red_envelope) + openDelayTime / 10.0 + "s"
+                wechatControlVO.delayOpenTime = openDelayTime
                 RedEnvelopePreferences.wechatControl = wechatControlVO
             }
 
-            R.id.sb_qq_lingqu -> {
-                LogUtils.d("sb_qq_ling qu:$progress")
-                t_lingqu = progress + 1
-                binding.tvQqLingqu.text =
-                    getString(R.string.control_delay_close_red_envelope) + t_lingqu / 10.0 + "s"
-                if (t_lingqu == 101) {
-                    binding.tvQqLingqu.text =
+            binding.sbAutoClose -> {
+                autoCloseDelayTime = progress + 1
+                binding.tvAutoClose.text =
+                    getString(R.string.control_delay_close_red_envelope) + autoCloseDelayTime / 10.0 + "s"
+                if (autoCloseDelayTime == 101) {
+                    binding.tvAutoClose.text =
                         getString(R.string.control_delay_close_red_envelope) + "不关闭"
                 }
-                wechatControlVO.delayCloseTime = t_lingqu
+                wechatControlVO.delayCloseTime = autoCloseDelayTime
                 RedEnvelopePreferences.wechatControl = wechatControlVO
             }
         }
