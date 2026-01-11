@@ -44,8 +44,9 @@
     <string name="control_not_monitor_chats">设置（填自己设置的备注，如有多个以@符号分割）</string>
     <string name="control_state_tips">辅助功能找到应用，开启或关闭。</string>
     <string name="control_float_windows_tips">悬浮窗开启或关闭。</string>
-    <string name="control_ip_tips">IP设置：</string>
+    <string name="control_ws_set_tips">Ws设置：</string>
     <string name="control_set_ip">连接IP:</string>
+    <string name="control_ws_connect_state">连接状态:</string>
     <string name="control_set_coordinates">坐标设置:</string>
 
 

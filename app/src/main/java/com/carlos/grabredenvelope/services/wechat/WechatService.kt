@@ -58,7 +58,7 @@ class WechatService : BaseAccessibilityService(), ICommandService {
 
         /** 是否允许抢红包 */
         fun isSwitchOnState(): Boolean {
-            return isRunningService && isSwitchOn
+            return isRunningService && isSwitchOn && WsClient.hasConnected()
         }
 
         /** 设置是否允许抢红包 */

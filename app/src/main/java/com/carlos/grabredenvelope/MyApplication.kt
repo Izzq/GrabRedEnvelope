@@ -1,15 +1,19 @@
 package com.carlos.grabredenvelope
 
+import androidx.lifecycle.MutableLiveData
 import androidx.multidex.MultiDexApplication
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.Utils
 import com.carlos.cutils.CUtils
 import com.carlos.grabredenvelope.config.AppControlManager
 import com.carlos.grabredenvelope.config.Config
+import com.carlos.grabredenvelope.event.WsStateEvent
 import com.tencent.bugly.crashreport.CrashReport
 
 
 class MyApplication : MultiDexApplication() {
+
+    val wsEvent = MutableLiveData<WsStateEvent>()
 
     override fun onCreate() {
         super.onCreate()

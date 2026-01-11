@@ -14,24 +14,29 @@ import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
-import com.blankj.utilcode.util.LogUtils
+import androidx.lifecycle.Observer
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.ServiceUtils.stopService
 import com.blankj.utilcode.util.VibrateUtils
+import com.carlos.grabredenvelope.MyApplication
 import com.carlos.grabredenvelope.R
 import com.carlos.grabredenvelope.activity.MainActivity
 import com.carlos.grabredenvelope.activity.PhonePointActivity
 import com.carlos.grabredenvelope.dao.WechatControlVO
 import com.carlos.grabredenvelope.data.RedEnvelopePreferences
 import com.carlos.grabredenvelope.databinding.FragmentControlBinding
+import com.carlos.grabredenvelope.event.WsStateEvent
 import com.carlos.grabredenvelope.float_windows.FloatingWindowService
 import com.carlos.grabredenvelope.websocket.WebSocketConst
+import com.carlos.grabredenvelope.websocket.WsClient
+
 
 /**
  * Github: https://github.com/xbdcc/.
  * Created by 小不点 on 2016/5/27.
  */
-class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
+class ControlFragment : BaseFragment(R.layout.fragment_control),
+    IMainFragment,
     SeekBar.OnSeekBarChangeListener {
 
 
@@ -40,6 +45,8 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
     private var autoCloseDelayTime: Int = 0
 
     private lateinit var binding: FragmentControlBinding
+
+    private var wsObserveForever: Observer<WsStateEvent>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,12 +60,27 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initData()
+        initEvent()
     }
 
     override fun onResume() {
         super.onResume()
         val mainActivity = activity as MainActivity
         updateControlView(mainActivity.checkStatus())
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        removeObserver()
+    }
+
+    private fun removeObserver() {
+        // 移除观察者
+        wsObserveForever?.let {
+            MyApplication.instance.wsEvent.removeObserver(it)
+        }
+        // 清空引用
+        wsObserveForever = null
     }
 
 
@@ -98,7 +120,11 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
             VibrateUtils.vibrate(100)
             binding.cbQqControl.isChecked = !isChecked
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            Toast.makeText(view.context, getString(R.string.control_state_tips), Toast.LENGTH_SHORT)
+            Toast.makeText(
+                view.context,
+                getString(R.string.control_state_tips),
+                Toast.LENGTH_SHORT
+            )
                 .show()
         }
 
@@ -199,9 +225,9 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
         //设置IP
         setupIpValidation(binding.etIp)
+        updateWsState()
 
     }
-
 
     @SuppressLint("SetTextI18n")
     private fun initData() {
@@ -238,6 +264,16 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
         val mainActivity = activity as MainActivity
         updateControlView(mainActivity.checkStatus())
+    }
+
+
+    private fun initEvent() {
+        val observeForever = Observer<WsStateEvent> {
+            updateWsState()
+        }.apply {
+            wsObserveForever = this
+        }
+        MyApplication.instance.wsEvent.observeForever(observeForever)
     }
 
     /**
@@ -286,8 +322,17 @@ class ControlFragment : BaseFragment(R.layout.fragment_control), IMainFragment,
 
 
     //==============================================================================================
-    // 校验IP
+    // webSocket
     //==============================================================================================
+
+
+    private fun updateWsState() {
+        // 假设有一个方法检查连接状态
+        val isConnected: Boolean = WsClient.hasConnected()
+
+        // 设置连接状态
+        binding.ivWsState.setImageResource(if (isConnected) R.drawable.connection_connected_shape else R.drawable.connection_disconnected_shape)
+    }
 
 
     /**

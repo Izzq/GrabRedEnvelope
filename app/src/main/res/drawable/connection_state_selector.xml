@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 连接成功状态 -->
+    <item android:drawable="@drawable/connection_connected_shape" android:state_enabled="true" />
+
+    <!-- 没有连接状态 -->
+    <item android:drawable="@drawable/connection_disconnected_shape" android:state_enabled="false" />
+
+    <!-- 默认状态（没有连接）-->
+    <item android:drawable="@drawable/connection_disconnected_shape" />
+
+</selector>

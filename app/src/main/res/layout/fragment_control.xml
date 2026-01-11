@@ -179,10 +179,30 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:text="@string/control_ip_tips"
+                android:text="@string/control_ws_set_tips"
                 android:textColor="#333333"
                 android:textSize="@dimen/text_size_small"
                 android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/control_ws_connect_state" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_ws_state"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/connection_state_selector" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -12,9 +12,13 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import androidx.lifecycle.Observer
 import com.blankj.utilcode.util.VibrateUtils
+import com.carlos.grabredenvelope.MyApplication
 import com.carlos.grabredenvelope.R
+import com.carlos.grabredenvelope.event.WsStateEvent
 import com.carlos.grabredenvelope.services.wechat.WechatService
+import com.carlos.grabredenvelope.websocket.WsClient
 
 class FloatingWindowService : Service() {
 
@@ -32,9 +36,36 @@ class FloatingWindowService : Service() {
     private var initialTouchX = 0f
     private var initialTouchY = 0f
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate() {
         super.onCreate()
+        initView()
+        initEvent()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // 检查悬浮窗权限
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+            startActivity(intent)
+        }
+        return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isRunningService = false
+        if (::windowManager.isInitialized && ::floatingView.isInitialized) {
+            windowManager.removeView(floatingView)
+        }
+    }
+
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initView() {
 
         isRunningService = true
 
@@ -46,7 +77,7 @@ class FloatingWindowService : Service() {
         toggleButton = floatingView.findViewById(R.id.iv_open_state)
         toggleButton.setImageResource(if (WechatService.isSwitchOnState()) R.mipmap.control_open_state else R.mipmap.control_close_state)
         toggleButton.setOnClickListener {
-            if (WechatService.isRunningServiceState()) {
+            if (WechatService.isRunningServiceState() && WsClient.hasConnected()) {
                 WechatService.setSwitchOnState(!WechatService.isSwitchOnState())
                 toggleButton.setImageResource(if (WechatService.isSwitchOnState()) R.mipmap.control_open_state else R.mipmap.control_close_state)
                 VibrateUtils.vibrate(100)
@@ -103,24 +134,19 @@ class FloatingWindowService : Service() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // 检查悬浮窗权限
-        if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-            startActivity(intent)
+    private var wsObserveForever: Observer<WsStateEvent>? = null
+
+    private fun initEvent() {
+        val observeForever = Observer<WsStateEvent> {
+            updateWsState()
+        }.apply {
+            wsObserveForever = this
         }
-        return START_STICKY
+        MyApplication.instance.wsEvent.observeForever(observeForever)
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
+    private fun updateWsState() {
+        toggleButton.setImageResource(if (WechatService.isSwitchOnState()) R.mipmap.control_open_state else R.mipmap.control_close_state)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        isRunningService = false
-        if (::windowManager.isInitialized && ::floatingView.isInitialized) {
-            windowManager.removeView(floatingView)
-        }
-    }
 }

@@ -2,6 +2,8 @@ package com.carlos.grabredenvelope.websocket
 
 import android.os.Build
 import com.blankj.utilcode.util.LogUtils
+import com.carlos.grabredenvelope.MyApplication
+import com.carlos.grabredenvelope.event.WsStateEvent
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -15,8 +17,22 @@ class WsClient(private val service: ICommandService) {
     private var ws: WebSocket? = null
     private var heartBeatRunnable: Runnable? = null
 
-    @Volatile
-    private var isConnected = false
+
+    companion object {
+
+        @Volatile
+        private var isConnected = false
+
+        @Volatile
+        private var state = WsState.NONE
+
+        /**获取连接状态*/
+        fun hasConnected(): Boolean {
+            return state == WsState.CONNECTED
+        }
+
+    }
+
 
     private val heartBeatInterval: Long = 10 // 心跳间隔，单位：秒
 
@@ -33,12 +49,16 @@ class WsClient(private val service: ICommandService) {
 
         LogUtils.d("[ws] ✅ WebSocket 开始连接 $serverUrl")
 
-        val request = Request.Builder().url(serverUrl).build()
+        state = WsState.CONNECTING
+        MyApplication.instance.wsEvent.postValue(WsStateEvent(state))
 
+        val request = Request.Builder().url(serverUrl).build()
         ws = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 LogUtils.d("[ws] ✅ WebSocket 已连接")
+                state = WsState.CONNECTED
                 isConnected = true
+                MyApplication.instance.wsEvent.postValue(WsStateEvent(state))
                 startHeartBeat()  // 开始发送心跳
             }
 
@@ -54,7 +74,9 @@ class WsClient(private val service: ICommandService) {
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 LogUtils.e("[ws] ❌ WebSocket 连接失败 ${t.message}")
+                state = WsState.NONE
                 isConnected = false
+                MyApplication.instance.wsEvent.postValue(WsStateEvent(state))
                 Thread.sleep(2000)
                 connect() // 自动重连
             }
@@ -62,7 +84,9 @@ class WsClient(private val service: ICommandService) {
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                 super.onClosed(webSocket, code, reason)
                 LogUtils.e("[ws] ❌ WebSocket 连接 Closed , reason=${reason}")
+                state = WsState.NONE
                 isConnected = false
+                MyApplication.instance.wsEvent.postValue(WsStateEvent(state))
             }
         })
     }
@@ -91,7 +115,7 @@ class WsClient(private val service: ICommandService) {
     }
 
     // 停止心跳
-    fun stopHeartBeat() {
+    private fun stopHeartBeat() {
         heartBeatRunnable?.let { Thread(it).interrupt() }
     }
 
@@ -101,6 +125,8 @@ class WsClient(private val service: ICommandService) {
             ws?.close(1000, "Normal closure")
             isConnected = false
             stopHeartBeat() // 停止心跳
+            state = WsState.NONE
+            MyApplication.instance.wsEvent.postValue(WsStateEvent(state))
         } catch (e: Exception) {
             e.printStackTrace()
         }
