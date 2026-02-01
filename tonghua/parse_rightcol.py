@@ -1,0 +1,91 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import re
+
+URL = "https://data.10jqka.com.cn/ifmarket/lhbggxq/report/2026-01-28/"
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+# 请求网页
+resp = requests.get(URL, headers=HEADERS, timeout=10)
+
+# 自动识别编码，避免中文乱码
+resp.encoding = resp.apparent_encoding
+
+print("状态码:", resp.status_code)
+print("响应头:", resp.headers)
+
+soup = BeautifulSoup(resp.text, "lxml")
+
+def parse_money(text):
+    """金额字符串 → 浮点数(单位万)"""
+    if not text:
+        return 0.0
+    text = text.replace(',', '').strip()
+    m = re.search(r'-?[\d.]+', text)
+    if not m:
+        return 0.0
+    num = float(m.group())
+    if '亿' in text:
+        num *= 10000
+    return num
+
+all_stock_data = []
+all_dept_data = []
+
+# 获取右侧股票明细
+stocks = soup.select("div.rightcol.fr .stockcont")
+
+for i, stock in enumerate(stocks, start=1):
+    print(f"====== 股票 {i} ======")
+    print(stock.prettify()[:1000])   # 仅打印前1000字符，防止太长
+    print("\n")
+
+    stockcode = stock.get("stockcode")
+    description = stock.select_one("p").get_text(strip=True) if stock.select_one("p") else ""
+
+    # 成交额/买入/卖出/净额
+    summary = stock.select_one(".cell-cont.cjmx p")
+    total_amount = buy_total = sell_total = net_total = 0.0
+    if summary:
+        text = summary.get_text(" ", strip=True)
+        total_amount = parse_money(re.search(r"成交额：([-\d.,亿万]+)", text).group(1)) if re.search(r"成交额：([-\d.,亿万]+)", text) else 0.0
+        buy_total = parse_money(re.search(r"合计买入：([-\d.,亿万]+)", text).group(1)) if re.search(r"合计买入：([-\d.,亿万]+)", text) else 0.0
+        sell_total = parse_money(re.search(r"合计卖出：([-\d.,亿万]+)", text).group(1)) if re.search(r"合计卖出：([-\d.,亿万]+)", text) else 0.0
+        net_total = parse_money(re.search(r"净额：([-\d.,亿万]+)", text).group(1)) if re.search(r"净额：([-\d.,亿万]+)", text) else 0.0
+
+    all_stock_data.append([stockcode, description, total_amount, buy_total, sell_total, net_total])
+
+    # 营业部表格
+    tables = stock.select("table.m-table")
+    for table in tables:
+        header_text = table.select_one("thead th").get_text(strip=True) if table.select_one("thead th") else ""
+        if "买入金额最大的前5名营业部" in header_text:
+            rank_type = "买入前5"
+        elif "卖出金额最大的前5名营业部" in header_text:
+            rank_type = "卖出前5"
+        else:
+            continue
+
+        for tr in table.select("tbody tr"):
+            tds = tr.find_all("td")
+            if len(tds) < 4:
+                continue
+            name = tds[0].get_text(strip=True)
+            buy_amt = parse_money(tds[1].get_text())
+            sell_amt = parse_money(tds[2].get_text())
+            net_amt = parse_money(tds[3].get_text())
+            all_dept_data.append([stockcode, rank_type, name, buy_amt, sell_amt, net_amt])
+
+# 保存 Excel
+df_stock = pd.DataFrame(all_stock_data, columns=[
+    "股票代码", "说明", "成交额(万)", "买入合计(万)", "卖出合计(万)", "净额(万)"
+])
+df_dept = pd.DataFrame(all_dept_data, columns=[
+    "股票代码", "榜单类型", "营业部", "买入额(万)", "卖出额(万)", "净额(万)"
+])
+
+df_stock.to_excel("龙虎榜_股票汇总.xlsx", index=False, engine='openpyxl')
+df_dept.to_excel("龙虎榜_营业部明细.xlsx", index=False, engine='openpyxl')
+
+print(f"✅ 完成，股票汇总：{len(df_stock)}条，营业部明细：{len(df_dept)}条")
