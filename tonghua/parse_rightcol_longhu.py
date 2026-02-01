@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+import time
+import random
 from datetime import datetime, timedelta
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
@@ -91,9 +93,17 @@ all_dept_data = []
 
 for date_str in date_list:
     print(f"抓取日期: {date_str} ...")
-    stock_data, dept_data = fetch_lhb_by_date(date_str)
-    all_stock_data.extend(stock_data)
-    all_dept_data.extend(dept_data)
+    try:
+        stock_data, dept_data = fetch_lhb_by_date(date_str)
+        all_stock_data.extend(stock_data)
+        all_dept_data.extend(dept_data)
+    except Exception as e:
+        print(f"⚠️ {date_str} 抓取失败: {e}")
+
+    # 防爬：随机等待 2~5 秒
+    wait_time = random.uniform(2, 5)
+    print(f"等待 {wait_time:.2f} 秒...")
+    time.sleep(wait_time)
 
 # 保存 Excel
 df_stock = pd.DataFrame(all_stock_data, columns=[
