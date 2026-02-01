@@ -8,6 +8,9 @@ from datetime import datetime, timedelta
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
+# 日总龙虎榜买入卖出席位数据
+
+
 def parse_money(text):
     """金额字符串 → 浮点数(单位万)"""
     if not text:

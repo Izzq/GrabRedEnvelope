@@ -2,6 +2,25 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime, timedelta
+import re  # 用于 parse_money
+
+# 日总龙虎榜价格数据
+
+# 工具函数
+def parse_money(text):
+    """解析金额字符串，返回单位：元"""
+    text = text.strip().replace(',', '')
+    if not text:
+        return 0.0
+    match = re.findall(r'-?[\d.]+', text)
+    if not match:
+        return 0.0
+    num = float(match[0])
+    if '亿' in text:
+        return num * 1e8
+    if '万' in text:
+        return num * 1e4
+    return num
 
 # 支持抓取多日
 start_date = "2026-01-28"
@@ -45,8 +64,12 @@ for date_str in daterange(start_date, end_date):
         name = tds[2].get_text(strip=True)
         current_price = tds[3].get_text(strip=True)
         change_percent = tds[4].get_text(strip=True)
-        amount = tds[5].get_text(strip=True)
-        net_buy = tds[6].get_text(strip=True)
+        amount_text = tds[5].get_text(strip=True)
+        net_buy_text = tds[6].get_text(strip=True)
+
+        # 转换为万元
+        amount_wan = round(parse_money(amount_text) / 1e4, 2)
+        net_buy_wan = round(parse_money(net_buy_text) / 1e4, 2)
 
         all_data.append({
             "日期": date_str,
@@ -55,14 +78,14 @@ for date_str in daterange(start_date, end_date):
             "名称": name,
             "现价": current_price,
             "涨跌幅": change_percent,
-            "成交金额": amount,
-            "净买入额": net_buy
+            "成交金额(万)": amount_wan,
+            "净买入额(万)": net_buy_wan
         })
 
 # 转换为 DataFrame
 df = pd.DataFrame(all_data)
 
 # 输出 Excel 文件
-output_file = "龙虎榜多日数据.xlsx"
+output_file = "龙虎榜多日数据_万.xlsx"
 df.to_excel(output_file, index=False)
 print(f"已生成表格: {output_file}")
