@@ -1,3 +1,5 @@
+
+
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -19,7 +21,7 @@ URL_TEMPLATE = "https://data.10jqka.com.cn/ifmarket/lhbtable/report/{date}/tab/j
 # =======================
 # 工具函数
 def parse_money(text):
-    """解析金额，返回单位：元"""
+    """解析金额，返回单位元"""
     text = text.strip().replace(',', '')
     if not text:
         return 0.0
@@ -31,9 +33,11 @@ def parse_money(text):
     return num
 
 def parse_pct(text):
+    """解析百分比"""
     return float(text.replace('%', '').strip())
 
 def fetch_stock_data(date_str):
+    """抓取单日龙虎榜数据"""
     url = URL_TEMPLATE.format(date=date_str)
     resp = requests.get(url, headers=HEADERS, timeout=10)
     resp.encoding = resp.apparent_encoding
@@ -46,16 +50,17 @@ def fetch_stock_data(date_str):
         tds = tr.find_all("td")
         if len(tds) < 7:
             continue
-        tag = tds[0].get_text(strip=True)
         code = tds[1].get_text(strip=True)
         name = tds[2].get_text(strip=True)
-        price = float(tds[3].get_text(strip=True))
-        change_pct = parse_pct(tds[4].get_text(strip=True))
+        price = float(tds[3].get_text(strip=True))          # 现价
+        change_pct = parse_pct(tds[4].get_text(strip=True)) # 涨跌幅%
         turnover = parse_money(tds[5].get_text(strip=True)) / 1e4  # 元 → 万
-        net_buy = parse_money(tds[6].get_text(strip=True)) / 1e4    # 元 → 万
+        net_buy = parse_money(tds[6].get_text(strip=True)) / 1e4   # 元 → 万
 
-        data.append([date_str, tag, code, name, price, change_pct,
-                     round(turnover, 2), round(net_buy, 2)])
+        data.append([
+            date_str, code, name, round(price,2), round(change_pct,2),
+            round(turnover,2), round(net_buy,2)
+        ])
 
     return data
 
@@ -73,17 +78,17 @@ for date_str in date_list:
         print(f"  ⚠️ {date_str} 抓取失败: {e}")
 
     # 防爬：随机等待 2~5 秒
-    wait_time = random.uniform(2, 5)
+    wait_time = random.uniform(2,5)
     print(f"  等待 {wait_time:.2f} 秒...")
     time.sleep(wait_time)
 
 # =======================
 # 保存 Excel / CSV
 df = pd.DataFrame(all_data, columns=[
-    "日期", "标签", "代码", "名称", "现价", "涨跌幅%", "成交金额(万)", "净买入额(万)"
+    "日期", "股票代码", "股票名称", "现价", "涨跌幅%", "成交金额(万)", "净买入额(万)"
 ])
-df.to_excel("股票数据_多日.xlsx", index=False, engine='openpyxl')
-df.to_csv("股票数据_多日.csv", index=False, encoding="utf-8-sig")
+df.to_excel("龙虎榜_多日.xlsx", index=False, engine='openpyxl')
+df.to_csv("龙虎榜_多日.csv", index=False, encoding="utf-8-sig")
 
 print(f"\n✅ 完成，总计抓取 {len(df)} 条数据")
-print("文件已生成：股票数据_机构_多日.xlsx / 股票数据_机构_多日.csv")
+print("文件已生成：龙虎榜_机构_多日.xlsx / 龙虎榜_机构_多日.csv")
