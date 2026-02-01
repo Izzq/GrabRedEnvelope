@@ -2,25 +2,24 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
+import time
+import random
 
-# ========= 方式选择 =========
-USE_ONLINE = True   # True=在线抓取  False=读取本地HTML
+# =======================
+# 时间段设置
+start_date = "2026-01-26"
+end_date = "2026-01-28"
+date_list = pd.date_range(start=start_date, end=end_date).strftime("%Y-%m-%d").tolist()
 
-URL = "https://data.10jqka.com.cn/ifmarket/lhbtable/report/2026-01-28/tab/jgcy/field/STOCKCODE/sort/asc/"  # ← 换成真实网址
-LOCAL_FILE = "page.html"
+# =======================
+# 在线抓取配置
+HEADERS = {"User-Agent": "Mozilla/5.0"}
+URL_TEMPLATE = "https://data.10jqka.com.cn/ifmarket/lhbtable/report/{date}/tab/jgcy/field/STOCKCODE/sort/asc/"
 
-# ========= 获取HTML =========
-if USE_ONLINE:
-    headers = {"User-Agent": "Mozilla/5.0"}
-    html = requests.get(URL, headers=headers, timeout=10).text
-else:
-    with open(LOCAL_FILE, encoding="utf-8") as f:
-        html = f.read()
-
-soup = BeautifulSoup(html, "lxml")
-
-# ========= 工具函数 =========
+# =======================
+# 工具函数
 def parse_money(text):
+    """解析金额，返回单位：元"""
     text = text.strip().replace(',', '')
     if not text:
         return 0.0
@@ -34,33 +33,57 @@ def parse_money(text):
 def parse_pct(text):
     return float(text.replace('%', '').strip())
 
-# ========= 解析表格 =========
-rows = soup.select("div.twrap > table.m-table > tbody > tr")
+def fetch_stock_data(date_str):
+    url = URL_TEMPLATE.format(date=date_str)
+    resp = requests.get(url, headers=HEADERS, timeout=10)
+    resp.encoding = resp.apparent_encoding
+    soup = BeautifulSoup(resp.text, "lxml")
 
-data = []
+    rows = soup.select("div.twrap > table.m-table > tbody > tr")
+    data = []
 
-for tr in rows:
-    tds = tr.find_all("td")
-    if len(tds) < 7:
-        continue
+    for tr in rows:
+        tds = tr.find_all("td")
+        if len(tds) < 7:
+            continue
+        tag = tds[0].get_text(strip=True)
+        code = tds[1].get_text(strip=True)
+        name = tds[2].get_text(strip=True)
+        price = float(tds[3].get_text(strip=True))
+        change_pct = parse_pct(tds[4].get_text(strip=True))
+        turnover = parse_money(tds[5].get_text(strip=True)) / 1e4  # 元 → 万
+        net_buy = parse_money(tds[6].get_text(strip=True)) / 1e4    # 元 → 万
 
-    tag = tds[0].get_text(strip=True)
-    code = tds[1].get_text(strip=True)
-    name = tds[2].get_text(strip=True)
-    price = float(tds[3].get_text(strip=True))
-    change_pct = parse_pct(tds[4].get_text(strip=True))
-    turnover = parse_money(tds[5].get_text(strip=True))
-    net_buy = parse_money(tds[6].get_text(strip=True))
+        data.append([date_str, tag, code, name, price, change_pct,
+                     round(turnover, 2), round(net_buy, 2)])
 
-    data.append([tag, code, name, price, change_pct, turnover, net_buy])
+    return data
 
-# ========= 保存结果 =========
-df = pd.DataFrame(data, columns=[
-    "标签", "代码", "名称", "现价", "涨跌幅%", "成交金额(元)", "净买入额(元)"
+# =======================
+# 多日抓取
+all_data = []
+
+for date_str in date_list:
+    print(f"抓取日期: {date_str} ...")
+    try:
+        daily_data = fetch_stock_data(date_str)
+        all_data.extend(daily_data)
+        print(f"  ✅ 完成，抓取 {len(daily_data)} 条")
+    except Exception as e:
+        print(f"  ⚠️ {date_str} 抓取失败: {e}")
+
+    # 防爬：随机等待 2~5 秒
+    wait_time = random.uniform(2, 5)
+    print(f"  等待 {wait_time:.2f} 秒...")
+    time.sleep(wait_time)
+
+# =======================
+# 保存 Excel / CSV
+df = pd.DataFrame(all_data, columns=[
+    "日期", "标签", "代码", "名称", "现价", "涨跌幅%", "成交金额(万)", "净买入额(万)"
 ])
+df.to_excel("股票数据_多日.xlsx", index=False, engine='openpyxl')
+df.to_csv("股票数据_多日.csv", index=False, encoding="utf-8-sig")
 
-df.to_excel("股票数据.xlsx", index=False)
-df.to_csv("股票数据.csv", index=False, encoding="utf-8-sig")
-
-print("✅ 解析完成，共", len(df), "条数据")
-print("文件已生成：股票数据.xlsx / 股票数据.csv")
+print(f"\n✅ 完成，总计抓取 {len(df)} 条数据")
+print("文件已生成：股票数据_多日.xlsx / 股票数据_多日.csv")
