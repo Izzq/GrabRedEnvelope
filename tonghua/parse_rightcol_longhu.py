@@ -38,21 +38,22 @@ stocks = soup.select("div.rightcol.fr .stockcont")
 
 for i, stock in enumerate(stocks, start=1):
     print(f"====== 股票 {i} ======")
-    print(stock.prettify()[:1000])   # 仅打印前1000字符，防止太长
+    print(stock.prettify()[:1000])  # 打印前1000字符检查
     print("\n")
 
     stockcode = stock.get("stockcode")
     description = stock.select_one("p").get_text(strip=True) if stock.select_one("p") else ""
 
-    # 成交额/买入/卖出/净额
+    # 成交额/买入/卖出/净额（从span里抓）
     summary = stock.select_one(".cell-cont.cjmx p")
     total_amount = buy_total = sell_total = net_total = 0.0
     if summary:
-        text = summary.get_text(" ", strip=True)
-        total_amount = parse_money(re.search(r"成交额：([-\d.,亿万]+)", text).group(1)) if re.search(r"成交额：([-\d.,亿万]+)", text) else 0.0
-        buy_total = parse_money(re.search(r"合计买入：([-\d.,亿万]+)", text).group(1)) if re.search(r"合计买入：([-\d.,亿万]+)", text) else 0.0
-        sell_total = parse_money(re.search(r"合计卖出：([-\d.,亿万]+)", text).group(1)) if re.search(r"合计卖出：([-\d.,亿万]+)", text) else 0.0
-        net_total = parse_money(re.search(r"净额：([-\d.,亿万]+)", text).group(1)) if re.search(r"净额：([-\d.,亿万]+)", text) else 0.0
+        spans = summary.find_all("span")
+        if len(spans) >= 3:
+            total_amount = parse_money(spans[0].get_text())
+            buy_total = parse_money(spans[1].get_text())
+            sell_total = parse_money(spans[2].get_text())
+            net_total = buy_total - sell_total  # 净额自己算
 
     all_stock_data.append([stockcode, description, total_amount, buy_total, sell_total, net_total])
 
