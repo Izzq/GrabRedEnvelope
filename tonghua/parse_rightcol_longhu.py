@@ -44,6 +44,8 @@ def fetch_lhb_by_date(date_str):
         total_amount = buy_total = sell_total = net_total = 0.0
         if summary:
             spans = summary.find_all("span")
+            # print(f"\nspans={spans}")
+            # 计算单位不准，参考数据库处理
             if len(spans) >= 3:
                 total_amount = parse_money(spans[0].get_text())
                 buy_total = parse_money(spans[1].get_text())
@@ -87,7 +89,7 @@ def fetch_lhb_by_date(date_str):
 
 # =====================
 # 时间段设置（可修改）
-start_date = "2026-02-10"
+start_date = "2026-02-13"
 end_date = "2026-02-13"
 date_list = pd.date_range(start=start_date, end=end_date).strftime("%Y-%m-%d").tolist()
 

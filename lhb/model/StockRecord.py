@@ -8,7 +8,10 @@ class StockRecord:
             date: str,
             code: str,
             rid: str,
+            tag: str,
             desc: str,
+            current_price: float,
+            change_percent: float,
             total: float,
             buy: float,
             sell: float,
@@ -17,7 +20,10 @@ class StockRecord:
         self.date = date
         self.code = code
         self.rid = rid
+        self.tag = tag
         self.desc = desc
+        self.current_price = current_price
+        self.change_percent = change_percent
         self.total = total
         self.buy = buy
         self.sell = sell
@@ -28,7 +34,10 @@ class StockRecord:
             self.date,
             self.code,
             self.rid,
+            self.tag,
             self.desc,
+            self.current_price,
+            self.change_percent,
             self.total,
             self.buy,
             self.sell,

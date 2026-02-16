@@ -23,7 +23,7 @@ def parse_money(text):
     return num
 
 # 支持抓取多日
-start_date = "2026-02-10"
+start_date = "2026-02-13"
 end_date = "2026-02-13"
 
 def daterange(start_date, end_date):
@@ -59,7 +59,7 @@ for date_str in daterange(start_date, end_date):
         if len(tds) < 7:
             continue
 
-        period = tds[0].get_text(strip=True)
+        tag = tds[0].get_text(strip=True)
         code = tds[1].get_text(strip=True)
         name = tds[2].get_text(strip=True)
         current_price = tds[3].get_text(strip=True)
@@ -73,7 +73,7 @@ for date_str in daterange(start_date, end_date):
 
         all_data.append({
             "日期": date_str,
-            "周期": period,
+            "标签": tag,
             "代码": code,
             "名称": name,
             "现价": current_price,

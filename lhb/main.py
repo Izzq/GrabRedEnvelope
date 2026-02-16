@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     service = LhbSpiderService()
 
-    for date_str in DateUtils.range("2026-02-12", "2026-02-13"):
+    for date_str in DateUtils.range("2026-02-13", "2026-02-13"):
         print("抓取日期:", date_str)
         stocks, depts = service.fetch_by_date(date_str)
         stock_dao.batch_insert(stocks)

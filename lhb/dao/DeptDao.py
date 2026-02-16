@@ -6,6 +6,7 @@ class DeptDao:
         trade_date TEXT,
         stock_code TEXT,
         rid TEXT,
+        tag TEXT,
         rank_type TEXT,
         dept_name TEXT,
         buy_amount REAL,
@@ -16,8 +17,8 @@ class DeptDao:
 
     INSERT_SQL = """
     INSERT INTO lhb_dept
-    (trade_date, stock_code, rid, rank_type, dept_name, buy_amount, sell_amount, net_amount)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (trade_date, stock_code, rid, tag, rank_type, dept_name, buy_amount, sell_amount, net_amount)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     def __init__(self, db):

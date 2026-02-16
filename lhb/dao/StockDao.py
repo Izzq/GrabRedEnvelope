@@ -6,7 +6,10 @@ class StockDao:
         trade_date TEXT,
         stock_code TEXT,
         rid TEXT,
+        tag TEXT,
         description TEXT,
+        current_price REAL,
+        change_percent REAL,
         total_amount REAL,
         buy_amount REAL,
         sell_amount REAL,
@@ -17,8 +20,8 @@ class StockDao:
 
     INSERT_SQL = """
     INSERT OR IGNORE INTO lhb_stock
-    (trade_date, stock_code, rid, description, total_amount, buy_amount, sell_amount, net_amount)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (trade_date, stock_code, rid, tag, description, current_price, change_percent, total_amount, buy_amount, sell_amount, net_amount)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     def __init__(self, db):
