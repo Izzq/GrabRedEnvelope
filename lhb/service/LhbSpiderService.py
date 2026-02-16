@@ -4,7 +4,7 @@ from core.HtmlParser import HtmlParser
 from core.MoneyUtils import MoneyUtils
 from model.StockRecord import StockRecord
 from model.DeptRecord import DeptRecord
-from model.BasicStockRecord import BasicStockRecord
+from model.LhBasicStock import LhBasicStock
 
 
 class LhbSpiderService:
@@ -38,7 +38,7 @@ class LhbSpiderService:
                 current_price = float(tds[3].get_text(strip=True))
                 change_percent = tds[4].get_text(strip=True)
 
-                record = BasicStockRecord(
+                record = LhBasicStock(
                     date=date_str,
                     tag=tag,
                     code=code,
@@ -64,48 +64,6 @@ class LhbSpiderService:
             rid = stock.get("rid")
             desc_tag = stock.select_one("p")
             desc = desc_tag.get_text(strip=True) if desc_tag else ""
-
-            # 从 records_map 获取基础信息
-            base_record = records_map.get(rid)
-            if not base_record:
-                continue
-            tag = base_record.tag
-            current_price = base_record.current_price
-            change_percent = base_record.change_percent
-
-
-            # TODO: 注意此处解释单位可能包含亿、万，并且单位不连在一起
-            # 解析成交额/买入/卖出/净额（支持 span 外单位）
-            p_tag = stock.select_one(".cell-cont.cjmx p")
-            total = buy = sell = net = 0.0
-            if p_tag:
-                text = p_tag.get_text(strip=True)
-                total_match = re.search(r"成交额：([\d.]+)(亿|万)?元", text)
-                buy_match = re.search(r"合计买入：([\d.]+)(亿|万)?", text)
-                sell_match = re.search(r"合计卖出：([\d.]+)(亿|万)?", text)
-                net_match = re.search(r"净额：([\d.-]+)(亿|万)?", text)
-
-                total = MoneyUtils.parse_str_with_unit(total_match)
-                buy = MoneyUtils.parse_str_with_unit(buy_match)
-                sell = MoneyUtils.parse_str_with_unit(sell_match)
-                net = MoneyUtils.parse_str_with_unit(net_match)
-
-            # 添加 StockRecord
-            stock_records.append(
-                StockRecord(
-                    date=date_str,
-                    code=code,
-                    rid=rid,
-                    tag=tag,
-                    desc=desc,
-                    current_price=round(current_price, 2),
-                    change_percent=change_percent,
-                    total=round(total, 2),
-                    buy=round(buy, 2),
-                    sell=round(sell, 2),
-                    net=round(net, 2)
-                )
-            )
 
             # =========================
             # 解析前5营业部买入/卖出
@@ -142,5 +100,48 @@ class LhbSpiderService:
                         )
                     )
 
+
+            # =========================
+            # 解析成交额/买入/卖出/净额（支持 span 外单位）
+            # 从 records_map 获取基础信息
+            base_record = records_map.get(rid)
+            if not base_record:
+                continue
+            tag = base_record.tag
+            current_price = base_record.current_price
+            change_percent = base_record.change_percent
+
+            # TODO: 注意此处解释单位可能包含亿、万，并且单位不连在一起
+            # 解析成交额/买入/卖出/净额（支持 span 外单位）
+            p_tag = stock.select_one(".cell-cont.cjmx p")
+            total = buy = sell = net = 0.0
+            if p_tag:
+                text = p_tag.get_text(strip=True)
+                total_match = re.search(r"成交额：([\d.]+)(亿|万)?元", text)
+                buy_match = re.search(r"合计买入：([\d.]+)(亿|万)?", text)
+                sell_match = re.search(r"合计卖出：([\d.]+)(亿|万)?", text)
+                net_match = re.search(r"净额：([\d.-]+)(亿|万)?", text)
+
+                total = MoneyUtils.parse_str_with_unit(total_match)
+                buy = MoneyUtils.parse_str_with_unit(buy_match)
+                sell = MoneyUtils.parse_str_with_unit(sell_match)
+                net = MoneyUtils.parse_str_with_unit(net_match)
+
+            # 添加 StockRecord
+            stock_records.append(
+                StockRecord(
+                    date=date_str,
+                    code=code,
+                    rid=rid,
+                    tag=tag,
+                    desc=desc,
+                    current_price=round(current_price, 2),
+                    change_percent=change_percent,
+                    total=round(total, 2),
+                    buy=round(buy, 2),
+                    sell=round(sell, 2),
+                    net=round(net, 2)
+                )
+            )
         # =========================
         return stock_records, dept_records

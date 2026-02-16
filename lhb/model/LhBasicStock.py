@@ -1,4 +1,4 @@
-class BasicStockRecord:
+class LhBasicStock:
     """
     龙虎榜基础表格记录实体
     用于存储每行基础数据（标签/代码/名称/rid/现价/涨跌幅）
