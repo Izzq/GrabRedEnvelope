@@ -23,8 +23,8 @@ def parse_money(text):
     return num
 
 # 支持抓取多日
-start_date = "2026-01-28"
-end_date = "2026-01-28"
+start_date = "2026-02-10"
+end_date = "2026-02-13"
 
 def daterange(start_date, end_date):
     start = datetime.strptime(start_date, "%Y-%m-%d")

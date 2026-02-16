@@ -1,0 +1,19 @@
+lhb/
+├── core/
+│   ├── HttpClient.py        # 网络请求
+│   ├── HtmlParser.py        # 页面解析
+│   ├── MoneyUtils.py        # 金额工具
+│
+├── dao/
+│   ├── DBManager.py         # 数据库连接 & 执行
+│   ├── StockDao.py          # 股票汇总 DAO
+│   ├── DeptDao.py           # 营业部 DAO
+│
+├── service/
+│   ├── LhbSpiderService.py  # 抓取服务
+│
+├── model/
+│   ├── StockRecord.py       # 实体类
+│   ├── DeptRecord.py
+│
+└── main.py                  # 启动入口
