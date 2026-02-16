@@ -18,6 +18,7 @@ class LhbSpiderService:
 
         for stock in stocks:
             code = stock.get("stockcode")
+            rid = stock.get("rid")
             desc = stock.select_one("p").get_text(strip=True)
 
             summary = stock.select_one(".cell-cont.cjmx p span")
@@ -32,7 +33,16 @@ class LhbSpiderService:
                 continue
 
             stock_records.append(
-                StockRecord(date_str, code, desc, total, buy, sell, net)
+                StockRecord(
+                    date=date_str,
+                    code=code,
+                    rid=rid,
+                    desc=desc,
+                    total=round(total, 2),
+                    buy=round(buy, 2),
+                    sell=round(sell, 2),
+                    net=round(net, 2)
+                )
             )
 
             tables = stock.select("table.m-table")
@@ -56,13 +66,14 @@ class LhbSpiderService:
 
                     dept_records.append(
                         DeptRecord(
-                            date_str,
-                            code,
-                            rank,
-                            tds[0].text.strip(),
-                            MoneyUtils.parse_wan(tds[1].text),
-                            MoneyUtils.parse_wan(tds[2].text),
-                            MoneyUtils.parse_wan(tds[3].text),
+                            date=date_str,
+                            code=code,
+                            rid=rid,
+                            rank_type=rank,
+                            name=tds[0].text.strip(),
+                            buy=MoneyUtils.parse_wan(tds[1].text),
+                            sell=MoneyUtils.parse_wan(tds[2].text),
+                            net=MoneyUtils.parse_wan(tds[3].text),
                         )
                     )
 

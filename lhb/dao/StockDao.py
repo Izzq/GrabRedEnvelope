@@ -5,19 +5,20 @@ class StockDao:
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         trade_date TEXT,
         stock_code TEXT,
+        rid TEXT,
         description TEXT,
         total_amount REAL,
         buy_amount REAL,
         sell_amount REAL,
         net_amount REAL,
-        UNIQUE(trade_date, stock_code)
+        UNIQUE(trade_date, rid)
     )
     """
 
     INSERT_SQL = """
     INSERT OR IGNORE INTO lhb_stock
-    (trade_date, stock_code, description, total_amount, buy_amount, sell_amount, net_amount)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    (trade_date, stock_code, rid, description, total_amount, buy_amount, sell_amount, net_amount)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     def __init__(self, db):
