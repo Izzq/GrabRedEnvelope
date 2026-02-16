@@ -65,6 +65,19 @@ class LhbSpiderService:
             desc_tag = stock.select_one("p")
             desc = desc_tag.get_text(strip=True) if desc_tag else ""
 
+            # 从 records_map 获取基础信息
+            base_record = records_map.get(rid)
+            if not base_record:
+                continue
+            tag = base_record.tag
+            current_price = base_record.current_price
+            change_percent = base_record.change_percent
+
+            # =========================
+            # 排除3日标签龙湖榜数据
+            if tag == "3日":
+                continue   # 跳过当前循环，进入下一次 for
+
             # =========================
             # 解析前5营业部买入/卖出
             tables = stock.select("table.m-table")
@@ -103,13 +116,6 @@ class LhbSpiderService:
 
             # =========================
             # 解析成交额/买入/卖出/净额（支持 span 外单位）
-            # 从 records_map 获取基础信息
-            base_record = records_map.get(rid)
-            if not base_record:
-                continue
-            tag = base_record.tag
-            current_price = base_record.current_price
-            change_percent = base_record.change_percent
 
             # TODO: 注意此处解释单位可能包含亿、万，并且单位不连在一起
             # 解析成交额/买入/卖出/净额（支持 span 外单位）
