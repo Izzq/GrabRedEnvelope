@@ -14,14 +14,15 @@ class StockDao:
         buy_amount REAL,
         sell_amount REAL,
         net_amount REAL,
+        inst_net REAL,
         UNIQUE(trade_date, rid)
     )
     """
 
     INSERT_SQL = """
     INSERT OR IGNORE INTO lhb_stock
-    (trade_date, stock_code, rid, tag, description, current_price, change_percent, total_amount, buy_amount, sell_amount, net_amount)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (trade_date, stock_code, rid, tag, description, current_price, change_percent, total_amount, buy_amount, sell_amount, net_amount, inst_net)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     def __init__(self, db):
